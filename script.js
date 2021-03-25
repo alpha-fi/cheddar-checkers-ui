@@ -103,25 +103,27 @@ window.onload = function () {
       return false;
     };
 
-    this.opponentJump = function (tile) {
+    this.opponentJump = async function (tile) {
       var pieceToRemove = this.canOpponentJump(tile.position);
       //if there is a piece to be removed, remove it
       if (pieceToRemove) {
-        pieceToRemove.remove();
+        const tx = await transfer($(pieceToRemove.element).attr('id'), $("#near-player-" + pieceToRemove.player).val());
+        pieceToRemove.remove(tx);
         return true;
       }
       return false;
     };
 
-    this.remove = function () {
+    this.remove = function (tx) {
       //remove it and delete it from the gameboard
       this.element.css("display", "none");
+      const piece = `<a href="https://explorer.testnet.near.org/transactions/${tx}" target="_blank"><div class='capturedPiece' title=${tx}></div></a>`;
       if (this.player == 1) {
-        $('#player2').append("<div class='capturedPiece'></div>");
+        $('#player2').append(piece);
         Board.score.player2 += 1;
       }
       if (this.player == 2) {
-        $('#player1').append("<div class='capturedPiece'></div>");
+        $('#player1').append(piece);
         Board.score.player1 += 1;
       }
       Board.board[this.position[0]][this.position[1]] = 0;
@@ -344,4 +346,31 @@ window.onload = function () {
       }
     }
   });
+
+  $('#mint-nfts').on("click", function () {
+    var gameID = $('#near-game').val();
+    $.post("https://testnet.api.nearspace.info:5000/mint_nft", {
+      token_id: `${gameID}_{inc}`,
+      "metadata": "",
+      "min": 1,
+      "max": 24
+    }).then((response) => {
+        console.log(response);
+        }
+    );
+  });
+
+  var transfer = (id, receiver_id) => {
+    var gameID = $('#near-game').val();
+    return $.post("https://testnet.api.nearspace.info:5000/transfer_nft", {
+      token_id: `${gameID}_${id}`,
+      "receiver_id": receiver_id,
+      "enforce_owner_id": "api.testnet",
+      "memo": ""
+    }).then((response) => {
+          console.log(response);
+          return response.tx;
+        }
+    );
+  }
 }
