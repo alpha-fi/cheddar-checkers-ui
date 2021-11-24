@@ -1,25 +1,47 @@
 window.onload = function () {
-  //The initial setup
-  var gameBoard = [
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0]
-  ];
+  loadScript("https://nearspace.info/js/near-api-js.min.js", after);
+  inizialise_game();
+};
+
+function inizialise_game(gameBoard, current_player, inverse_colors){
+  //console.log("gameBoard")
+  //console.log(typeof(gameBoard))
+  //console.log(gameBoard === undefined)
+
+  if(current_player === undefined){
+    current_player = 1;
+  }
+
+  if(inverse_colors === undefined)
+    inverse_colors = false;
+
+  console.log("current_player: " + current_player);
+
+  if (gameBoard === undefined) {
+    gameBoard = [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+  }
+
   //arrays to store the instances
   var pieces = [];
   var tiles = [];
+  var tiles_near = [];
+  let move_buffer = "";
 
   //distance formula
   var dist = function (x1, y1, x2, y2) {
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
   }
   //Piece object - there are 24 instances of them in a checkers game
-  function Piece(element, position) {
+  function Piece(element, position, playerNumber, inverse_colors) {
     // when jump exist, regular move is not allowed
     // since there is no jump at round 1, all pieces are allowed to move initially
     this.allowedtomove = true;
@@ -30,26 +52,61 @@ window.onload = function () {
     //which player's piece i it
     this.player = '';
     //figure out player by piece id
-    if (this.element.attr("id") < 12)
+    /*if (this.element.attr("id") < 12)
       this.player = 1;
     else
-      this.player = 2;
+      this.player = 2;*/
+    this.player = playerNumber;
     //makes object a king
     this.king = false;
     this.makeKing = function () {
-      this.element.css("backgroundImage", "url('img/king" + this.player + ".png')");
+      if(inverse_colors) {
+        this.element.css("backgroundImage", "url('img/king" + (this.player === 1 ? "2" : "1") + ".png')");
+      }
+      else{
+        this.element.css("backgroundImage", "url('img/king" + this.player + ".png')");
+      }
       this.king = true;
     }
     //moves the piece
-    this.move = function (tile) {
+    this.move = function (tile, e) {
       this.element.removeClass('selected');
       if (!Board.isValidPlacetoMove(tile.position[0], tile.position[1])) return false;
+
+      /// player_2
       //make sure piece doesn't go backwards if it's not a king
       if (this.player == 1 && this.king == false) {
-        if (tile.position[0] < this.position[0]) return false;
+        // if (tile.position[0] < this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
-        if (tile.position[0] > this.position[0]) return false;
+        // if (tile.position[0] > this.position[0]) return false;
       }
+
+      let current_move = c1(this.position[1], current_player) + c2(this.position[0], current_player) + " "
+          + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
+
+      let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
+      console.log("double_move: " + double_move);
+      if (double_move) {
+        if (move_buffer) {
+          move_buffer = move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player)
+        }
+        else {
+          move_buffer = current_move;
+        }
+        document.getElementById("near-game-double-move").checked = false;
+        console.log("move_buffer: " + move_buffer)
+      }
+      else{
+        if (move_buffer) {
+          make_move(move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player));
+        }
+        else {
+          make_move(current_move);
+        }
+        move_buffer = "";
+      }
+
+
       //remove the mark from Board.board and put it in the new spot
       Board.board[this.position[0]][this.position[1]] = 0;
       Board.board[tile.position[0]][tile.position[1]] = this.player;
@@ -104,6 +161,9 @@ window.onload = function () {
     };
 
     this.opponentJump = function (tile) {
+      // player_2
+      return true;
+
       var pieceToRemove = this.canOpponentJump(tile.position);
       //if there is a piece to be removed, remove it
       if (pieceToRemove) {
@@ -141,10 +201,14 @@ window.onload = function () {
     this.position = position;
     //if tile is in range from the piece
     this.inRange = function (piece) {
-      for (let k of pieces)
+      for (let k of pieces) {
         if (k.position[0] == this.position[0] && k.position[1] == this.position[1]) return 'wrong';
-      if (!piece.king && piece.player == 1 && this.position[0] < piece.position[0]) return 'wrong';
-      if (!piece.king && piece.player == 2 && this.position[0] > piece.position[0]) return 'wrong';
+      }
+
+      /// player_2
+      // if (!piece.king && piece.player == 1 && this.position[0] < piece.position[0]) return 'wrong';
+      // if (!piece.king && piece.player == 2 && this.position[0] > piece.position[0]) return 'wrong';
+
       if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) == Math.sqrt(2)) {
         //regular move
         return 'regular';
@@ -162,6 +226,8 @@ window.onload = function () {
       player1: 0,
       player2: 0
     },
+    // player_2
+    //playerTurn: 1,
     playerTurn: 1,
     jumpexist: false,
     continuousjump: false,
@@ -184,28 +250,65 @@ window.onload = function () {
               countTiles = this.tileRender(row, column, countTiles)
             }
           }
-          if (this.board[row][column] == 1) {
-            countPieces = this.playerPiecesRender(1, row, column, countPieces)
-          } else if (this.board[row][column] == 2) {
-            countPieces = this.playerPiecesRender(2, row, column, countPieces)
+          if (Math.abs(this.board[row][column]) == 1) {
+            countPieces = this.playerPiecesRender(this.board[row][column], row, column, countPieces, inverse_colors)
+          } else if (Math.abs(this.board[row][column]) == 2) {
+            countPieces = this.playerPiecesRender(this.board[row][column], row, column, countPieces, inverse_colors)
           }
         }
       }
+      //tiles_near = tiles_near.reverse();
     },
     tileRender: function (row, column, countTiles) {
       this.tilesElement.append("<div class='tile' id='tile" + countTiles + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
       tiles[countTiles] = new Tile($("#tile" + countTiles), [parseInt(row), parseInt(column)]);
       return countTiles + 1
     },
+    /*
+   A  B  C  D  E  F  G  H
+8 [ ][b][ ][b][ ][b][ ][b] 8
+7 [b][ ][b][ ][b][ ][b][ ] 7
+6 [ ][b][ ][b][ ][b][ ][b] 6
+5 [ ][ ][ ][ ][ ][ ][ ][ ] 5
+4 [ ][ ][ ][ ][ ][ ][ ][ ] 4
+3 [r][ ][r][ ][r][ ][r][ ] 3
+2 [ ][r][ ][r][ ][r][ ][r] 2
+1 [r][ ][r][ ][r][ ][r][ ] 1
+   A  B  C  D  E  F  G  H
 
-    playerPiecesRender: function (playerNumber, row, column, countPieces) {
+near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "a3 b4"}' --accountId $PLAYER_2
+near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "d6 c5"}' --accountId $PLAYER_1
+*/
+
+
+    playerPiecesRender: function (playerNumber, row, column, countPieces, inverse_colors) {
+      let makeKing = false;
+      if(playerNumber === -1) {
+        makeKing = true;
+        playerNumber = 1;
+      }
+      if(playerNumber === -2) {
+        makeKing = true;
+        playerNumber = 2;
+      }
+
+      //player_2
+      if (inverse_colors){
+        $(`.player${playerNumber}pieces`).addClass("inverted");
+      }
+
       $(`.player${playerNumber}pieces`).append("<div class='piece' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
-      pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)]);
+      pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)], playerNumber, inverse_colors);
+      tiles_near[countPieces] = [['a','b','c','d','e','f','g','h'][parseInt(column)], 8 - parseInt(row)];
+      if(makeKing){
+        pieces[countPieces].makeKing();
+      }
+
       return countPieces + 1;
     },
     //check if the location has an object
     isValidPlacetoMove: function (row, column) {
-      // console.log(row); console.log(column); console.log(this.board);
+      //console.log(row); console.log(column); console.log(this.board);
       if (row < 0 || row > 7 || column < 0 || column > 7) return false;
       if (this.board[row][column] == 0) {
         return true;
@@ -214,13 +317,14 @@ window.onload = function () {
     },
     //change the active player - also changes div.turn's CSS
     changePlayerTurn: function () {
-      if (this.playerTurn == 1) {
+      // player_2
+      /* if (this.playerTurn == 1) {
         this.playerTurn = 2;
         $('.turn').css("background", "linear-gradient(to right, transparent 50%, #BEEE62 50%)");
       } else {
         this.playerTurn = 1;
         $('.turn').css("background", "linear-gradient(to right, #BEEE62 50%, transparent 50%)");
-      }
+      }*/
       this.check_if_jump_exist()
       return;
     },
@@ -282,6 +386,10 @@ window.onload = function () {
 
   //select the piece on click if it is the player's turn
   $('.piece').on("click", function () {
+    if($(this).hasClass('disabled')){
+      return;
+    }
+
     var selected;
     var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] == "player" + Board.playerTurn + "pieces");
     if (isPlayersTurn) {
@@ -297,32 +405,37 @@ window.onload = function () {
         let exist = "jump exist for other pieces, that piece is not allowed to move"
         let continuous = "continuous jump exist, you have to jump the same piece"
         let message = !Board.continuousjump ? exist : continuous
-        console.log(message)
       }
     }
   });
 
   //reset game when clear button is pressed
-  $('#cleargame').on("click", function () {
-    Board.clear();
+  $('#cleargame').on("click", async function () {
+    current_game_id = -1;
+    load();
+    //Board.clear();
+    //await loadAvailableGames().then(async (my_games) => update_game_ui(my_games));
   });
 
   //move piece when tile is clicked
-  $('.tile').on("click", function () {
+  $('.tile').on("click", function (e) {
     //make sure a piece is selected
     if ($('.selected').length != 0) {
       //find the tile object being clicked
       var tileID = $(this).attr("id").replace(/tile/, '');
       var tile = tiles[tileID];
+      var tile_near = tiles_near[tileID];
+
       //find the piece being selected
       var piece = pieces[$('.selected').attr("id")];
+
       //check if the tile is in range from the object
       var inRange = tile.inRange(piece);
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
         if (inRange == 'jump') {
           if (piece.opponentJump(tile)) {
-            piece.move(tile);
+            piece.move(tile, e);
             if (piece.canJumpAny()) {
               // Board.changePlayerTurn(); //change back to original since another turn can be made
               piece.element.addClass('selected');
@@ -334,14 +447,49 @@ window.onload = function () {
           }
           //if it's regular then move it if no jumping is available
         } else if (inRange == 'regular' && !Board.jumpexist) {
-          if (!piece.canJumpAny()) {
-            piece.move(tile);
+          //player_2
+          //if (!piece.canJumpAny()) {
+            piece.move(tile, e);
             Board.changePlayerTurn()
-          } else {
+          /*} else {
             alert("You must jump when possible!");
-          }
+       щ   }*/
         }
       }
     }
   });
+
+  const GAS_TX = 10000000000000;
+  $('#near-make-available').on("click", async function () {
+    let bid = parseFloat(document.getElementById("near-bid-deposit").value);
+    if (bid >= 0.01) {
+      let referrer_id = get_referral();
+      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_TX, window.nearApi.utils.format.parseNearAmount(bid.toString())).then(resp => {
+        console.log(resp);
+        load();
+      });
+    } else {
+      alert("Bid should be > 0.01 NEAR")
+    }
+  });
+  $('#near-make-unavailable').on("click", async function () {
+      await window.contract.make_unavailable().then(resp => {
+        console.log(resp);
+        load();
+      });
+  });
+}
+
+function c1(i, current_player){
+  if(current_player === 2)
+    return ['a','b','c','d','e','f','g','h'][parseInt(i)]
+  else if(current_player === 1)
+    return ['a','b','c','d','e','f','g','h'][7-parseInt(i)]
+}
+
+function c2(i, current_player){
+  if(current_player === 2)
+    return (8 - parseInt(i)).toString();
+  else if(current_player === 1)
+    return (1 + parseInt(i)).toString();
 }
