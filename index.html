@@ -6,6 +6,8 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
   <link href="near.css" rel="stylesheet">
+  <!-- TODO REMOVE NEXT LINE. Hotfix & https workaround -->
+  <link href="https://web4.near.page" rel="stylesheet">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -37,7 +39,7 @@
             <label for="near-bid-deposit">Join waiting list:</label>
           </div>
           <div>
-            My bid: <input type="text" id="near-bid-deposit" value="0.01" style="width: 30px"/> NEAR
+            My bid: <input type="text" id="near-bid-deposit" value="0.5" style="width: 30px"/> NEAR
           </div>
           <input type="button" id="near-make-available" value="Join waiting list">
         </div>
@@ -46,7 +48,7 @@
         </div>
       </div>
       <div id="near-game" class="hidden">
-        <div id=near-game-turn" class="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
+        <div id="near-game-turn-block" class="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
         <div id="near-game-give-up"><input type="button" onclick="give_up()" value="Concede"></div>
         <div id="near-game-finished" class="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
           Reward: <span id="near-game-reward">...</span> NEAR
@@ -58,7 +60,7 @@
       <div id="near-game-rules" class="hidden">
         <ul>
           <li>Set a bid and join waiting list or select an available player to start the game.</li>
-          <li>Winner gets a bank.</li>
+          <li>The winner takes the pot.</li>
           <li>Invite a friend to get a 10% referral bonus from his rewards.</li>
           <li>Hold shift button (or check a checkbox) to perform a double jump. Release a shift button before a final
             move.

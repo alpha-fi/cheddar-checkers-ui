@@ -1,10 +1,23 @@
+const nft_contract = "nft_checkers.near";
+const nft_web4_url = "https://nft_checkers.near.page/style";
+const players_css = ["player-1", "player-2"];
+
 const nearConfig = {
+    networkId: 'mainnet',
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    contractName: "app.checkers.near",
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',   
+
+    /*
     networkId: 'testnet',
     nodeUrl: 'https://rpc.testnet.near.org',
-    contractName: "dev-1637758406153-54163614354573",
+    contractName: "dev-1637767011833-32850784406820",
     walletUrl: 'https://wallet.testnet.near.org',
     helperUrl: 'https://helper.testnet.near.org',
     explorerUrl: 'https://explorer.testnet.near.org',
+    */
 };
 
 let current_game_id = -1;
@@ -44,8 +57,7 @@ async function load() {
                     });
                 });
             }, 10000);
-        }
-        else{
+        } else{
             if(loadGameInterval)
                 clearInterval(loadGameInterval);
             load_game().then(() => {
@@ -108,7 +120,7 @@ async function load_game() {
         pieces = [];
         tiles = [];
         console.log("current_game_id: " + current_game_id);
-        await window.contract.get_game({game_id: current_game_id}).then(game => {
+        await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
                 return;
 
@@ -118,8 +130,8 @@ async function load_game() {
             let is_turn_availabe = getPlayerByIndex(game, game.current_player_index) === window.accountId;
 
             if (game.turns > -1) {
-                let player_1_spent = getTimeSpent(game.total_time_spent[0], game.last_turn_timestamp[0], game.current_player_index === 0);
-                let player_2_spent = getTimeSpent(game.total_time_spent[1], game.last_turn_timestamp[1], game.current_player_index === 1);
+                let player_1_spent = getTimeSpent(game.total_time_spent[0], game.last_turn_timestamp, game.current_player_index === 0);
+                let player_2_spent = getTimeSpent(game.total_time_spent[1], game.last_turn_timestamp, game.current_player_index === 1);
                 document.getElementById('near-player-1-time-spent').innerText = "Time spent: " + fromatTimestamp(player_1_spent);
                 document.getElementById('near-player-2-time-spent').innerText = "Time spent: " + fromatTimestamp(player_2_spent);
 
@@ -129,6 +141,10 @@ async function load_game() {
                     $('#near-player-2-stop-game').removeClass('hidden');
                 }
             }
+
+            window.player1 = game.player_1;
+            window.player2 = game.player_2;
+            await loadPlayerNFT();
 
             if (!force_reload && is_turn_availabe && last_updated_turn === game.turns && game.winner_index === null) {
                 console.log("UI update skipped");
@@ -144,20 +160,17 @@ async function load_game() {
             document.getElementById('near-game-player-1').innerText = game.player_1;
             document.getElementById('near-game-player-2').innerText = game.player_2;
             document.getElementById('near-game-turn').innerText = game.turns;
-            let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward, 2)) / 2;
+            let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
             document.getElementById('near-player-1-deposit').innerText = "Deposit: " + half_reward + " NEAR";
             document.getElementById('near-player-2-deposit').innerText = document.getElementById('near-player-1-deposit').innerText;
-
-
 
             if (game.winner_index !== null) {
                 $('#near-game-finished').removeClass('hidden');
                 document.getElementById('near-game-winner').innerText = getPlayerByIndex(game, game.winner_index);
-                document.getElementById('near-game-reward').innerText = nearApi.utils.format.formatNearAmount(game.reward, 2);
+                document.getElementById('near-game-reward').innerText = nearApi.utils.format.formatNearAmount(game.reward.balance, 2);
                 $('#near-game-give-up').addClass('hidden');
                 $('#near-game-turn').addClass('hidden');
-            }
-            else{
+            } else{
                 $('#near-game-finished').addClass('hidden');
                 $('#near-game-give-up').removeClass('hidden');
                 $('#near-game-turn').removeClass('hidden');
@@ -391,6 +404,12 @@ function after() {
             changeMethods: ['make_available', 'start_game', 'make_move', 'give_up', 'make_unavailable', 'stop_game'],
         })
 
+        window.nft_contract = await new window.nearApi.Contract(window.walletConnection.account(), nft_contract, {
+            viewMethods: ['nft_tokens_for_owner'],
+        })
+
+        window.nft_tokens = ["", ""];
+
         await load();
 
         if (!window.accountId) {
@@ -411,6 +430,75 @@ function after() {
     })();
 
 
+}
+
+async function loadPlayerNFT() {
+    if (window.nft_loaded == true || !window.player1 || !window.player2)
+        return;
+
+    window.nft_loaded = true;
+    await window.nft_contract.nft_tokens_for_owner({account_id: window.player1}).then(tokens => {
+        if (tokens.length) {
+            loadPlayerCss(tokens[tokens.length - 1].token_id, 0);
+        }
+    });
+
+    await window.nft_contract.nft_tokens_for_owner({account_id: window.player2}).then(tokens => {
+        if (tokens.length) {
+            loadPlayerCss(tokens[tokens.length - 1].token_id, 1);
+        }
+    })
+}
+
+function loadPlayerCss(token_id, index) {
+    console.log("LOAD TOKEN: " + token_id);
+    const cssId = 'nft-css-' + index;
+    if (!document.getElementById(cssId)) {
+        window.nft_tokens[index] = token_id;
+        const head = document.getElementsByTagName('head')[0];
+        const link = document.createElement('link');
+        link.id = cssId;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = `${nft_web4_url}/${token_id}.css`;
+        link.media = 'all';
+        head.appendChild(link);
+
+        updatePlayerNft(index)
+    }
+}
+
+function updateAllPlayersNft() {
+    if (window.nft_tokens && window.nft_tokens.length) {
+        [0, 1].map(index => {
+            if (window.nft_tokens[index] !== "")
+                replacePlayerNftClass(index);
+        });
+    }
+}
+
+function updatePlayerNft(index) {
+    if (window.nft_tokens.length) {
+        if (window.nft_tokens[index] !== "")
+            replacePlayerNftClass(index);
+    }
+}
+
+function replacePlayerNftClass(index) {
+    let nft_class = window.nft_tokens[index];
+    let player_class = players_css[index];
+    let player_account = index == 1 ? window.player2 : (index == 0 ? window.player1 : "");
+
+    let player_account_css = player_account.replace(".", "_").replace("-", "_");
+    let nft_css = nft_class.replace(".", "_").replace(" ", "_").replace("-", "_");
+
+    var places = document.getElementsByClassName(player_class);
+    for (var x = 0; x < places.length; x++) {
+        if (!places[x].classList.contains(nft_css))
+            places[x].classList.add(nft_css);
+        if (!places[x].classList.contains(player_account_css))
+            places[x].classList.add(player_account_css);
+    }
 }
 
 

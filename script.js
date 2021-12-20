@@ -4,18 +4,15 @@ window.onload = function () {
 };
 
 function inizialise_game(gameBoard, current_player, inverse_colors){
-  //console.log("gameBoard")
-  //console.log(typeof(gameBoard))
-  //console.log(gameBoard === undefined)
-
   if(current_player === undefined){
     current_player = 1;
   }
 
   if(inverse_colors === undefined)
-    inverse_colors = false;
+    inverse_cinverse_colorsolors = false;
 
   console.log("current_player: " + current_player);
+  console.log("inverse_colors: " + inverse_colors);
 
   if (gameBoard === undefined) {
     gameBoard = [
@@ -264,22 +261,6 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       tiles[countTiles] = new Tile($("#tile" + countTiles), [parseInt(row), parseInt(column)]);
       return countTiles + 1
     },
-    /*
-   A  B  C  D  E  F  G  H
-8 [ ][b][ ][b][ ][b][ ][b] 8
-7 [b][ ][b][ ][b][ ][b][ ] 7
-6 [ ][b][ ][b][ ][b][ ][b] 6
-5 [ ][ ][ ][ ][ ][ ][ ][ ] 5
-4 [ ][ ][ ][ ][ ][ ][ ][ ] 4
-3 [r][ ][r][ ][r][ ][r][ ] 3
-2 [ ][r][ ][r][ ][r][ ][r] 2
-1 [r][ ][r][ ][r][ ][r][ ] 1
-   A  B  C  D  E  F  G  H
-
-near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "a3 b4"}' --accountId $PLAYER_2
-near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "d6 c5"}' --accountId $PLAYER_1
-*/
-
 
     playerPiecesRender: function (playerNumber, row, column, countPieces, inverse_colors) {
       let makeKing = false;
@@ -297,7 +278,9 @@ near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "d6 c5"}' --
         $(`.player${playerNumber}pieces`).addClass("inverted");
       }
 
-      $(`.player${playerNumber}pieces`).append("<div class='piece' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      let player_index = !inverse_colors ? playerNumber : [2, 1][playerNumber - 1];
+
+      $(`.player${playerNumber}pieces`).append("<div class='piece " + players_css[player_index - 1] + "' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
       pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)], playerNumber, inverse_colors);
       tiles_near[countPieces] = [['a','b','c','d','e','f','g','h'][parseInt(column)], 8 - parseInt(row)];
       if(makeKing){
@@ -459,12 +442,12 @@ near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "d6 c5"}' --
     }
   });
 
-  const GAS_TX = 10000000000000;
+  const GAS_MAKE_AVAILABLE = 50000000000000;
   $('#near-make-available').on("click", async function () {
     let bid = parseFloat(document.getElementById("near-bid-deposit").value);
     if (bid >= 0.01) {
       let referrer_id = get_referral();
-      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_TX, window.nearApi.utils.format.parseNearAmount(bid.toString())).then(resp => {
+      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bid.toString())).then(resp => {
         console.log(resp);
         load();
       });
@@ -478,6 +461,8 @@ near call $CONTRACT_NAME make_move '{"game_id": '$GAME_ID', "line": "d6 c5"}' --
         load();
       });
   });
+
+  updateAllPlayersNft();
 }
 
 function c1(i, current_player){
