@@ -1,5 +1,5 @@
-const nft_contract = "nft_checkers.near";
-const nft_web4_url = "https://nft_checkers.near.page/style";
+const nft_contract = "nft-checkers.near";
+const nft_web4_url = "https://nft-checkers.near.page/style";
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
@@ -8,7 +8,7 @@ const nearConfig = {
     contractName: "app.checkers.near",
     walletUrl: 'https://wallet.near.org',
     helperUrl: 'https://helper.mainnet.near.org',
-    explorerUrl: 'https://explorer.mainnet.near.org',   
+    explorerUrl: 'https://explorer.mainnet.near.org',
 
     /*
     networkId: 'testnet',
