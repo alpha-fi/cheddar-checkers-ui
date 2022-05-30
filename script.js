@@ -444,15 +444,27 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
   const GAS_MAKE_AVAILABLE = 50000000000000;
   $('#near-make-available').on("click", async function () {
-    let bid = parseFloat(document.getElementById("near-bid-deposit").value);
-    if (bid >= 0.01) {
+    let bidNEAR = parseFloat(document.getElementById("near-bid-deposit").value);
+    let bidCheddar = parseFloat(document.getElementById("cheddar-bid-deposit").value);
+    if (bidNEAR >= 0.01) {
       let referrer_id = get_referral();
-      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bid.toString())).then(resp => {
+      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
         console.log(resp);
         load();
       });
+    } if (bidCheddar >= 1) {
+
+      await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
+        console.log(resp);
+        load();
+      });
+
+      // await window.contract.make_available_ft({sender_id: window.accountId, amount: 1, token_id: "token-v2.cheddar.testnet"}, GAS_MAKE_AVAILABLE).then(resp => {
+      //   console.log(resp);
+      //   load();
+      // });
     } else {
-      alert("Bid should be > 0.01 NEAR")
+      alert("Bid should be > 0.01 NEAR or > 1 Cheddar")
     }
   });
   $('#near-make-unavailable').on("click", async function () {
@@ -478,3 +490,5 @@ function c2(i, current_player){
   else if(current_player === 1)
     return (1 + parseInt(i)).toString();
 }
+
+

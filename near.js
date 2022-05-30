@@ -3,21 +3,21 @@ const nft_web4_url = "https://nft-checkers.near.page/style";
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
-    networkId: 'mainnet',
-    nodeUrl: 'https://rpc.mainnet.near.org',
-    contractName: "app.checkers.near",
-    walletUrl: 'https://wallet.near.org',
-    helperUrl: 'https://helper.mainnet.near.org',
-    explorerUrl: 'https://explorer.mainnet.near.org',
+    // networkId: 'mainnet',
+    // nodeUrl: 'https://rpc.mainnet.near.org',
+    // contractName: "app.checkers.near",
+    // walletUrl: 'https://wallet.near.org',
+    // helperUrl: 'https://helper.mainnet.near.org',
+    // explorerUrl: 'https://explorer.mainnet.near.org',
 
-    /*
+    
     networkId: 'testnet',
     nodeUrl: 'https://rpc.testnet.near.org',
-    contractName: "dev-1637767011833-32850784406820",
+    contractName: "checkers.cheddar.testnet",
     walletUrl: 'https://wallet.testnet.near.org',
     helperUrl: 'https://helper.testnet.near.org',
     explorerUrl: 'https://explorer.testnet.near.org',
-    */
+    
 };
 
 let current_game_id = -1;
@@ -327,6 +327,8 @@ async function loadPlayers() {
     })
 }
 
+
+
 const GAS_START_GAME = 50000000000000;
 const GAS_GIVE_UP = 50000000000000;
 const GAS_MOVE = 30000000000000;
@@ -401,7 +403,7 @@ function after() {
             // View methods are read only. They don't modify the state, but usually return some value.
             viewMethods: ['get_available_players', 'get_available_games', 'get_game'],
             // Change methods can modify the state. But you don't receive the returned value when called.
-            changeMethods: ['make_available', 'start_game', 'make_move', 'give_up', 'make_unavailable', 'stop_game'],
+            changeMethods: ['make_available', 'make_available_ft', 'start_game', 'make_move', 'give_up', 'make_unavailable', 'stop_game'],
         })
 
         window.nft_contract = await new window.nearApi.Contract(window.walletConnection.account(), nft_contract, {
@@ -540,4 +542,101 @@ function reverseArray(arr) {
     }
 
     return arr;
+}
+
+async function setupTransaction({ receiverId, actions, nonceOffset = 1}) {
+
+
+  const localKey = await window.walletConnection.account().connection.signer.getPublicKey(
+    window.accountId,
+    window.walletConnection.account().connection.networkId
+  );
+
+  let accessKey = await window.walletConnection.account().accessKeyForTransaction(
+    receiverId,
+    actions,
+    localKey
+  );
+
+  if (!accessKey) {
+    throw new Error(
+      `Cannot find matching key for transaction sent to ${receiverId}`
+    );
+  }
+
+  const block = await window.walletConnection.account().connection.provider.block({ finality: 'final' });
+  const blockHash = baseDecode(block.header.hash);
+
+  const publicKey = PublicKey.from(accessKey.public_key);
+  const nonce = accessKey.access_key.nonce + nonceOffset;
+
+  return createTransaction(
+    window.accountId,
+    publicKey,
+    receiverId,
+    nonce,
+    actions,
+    blockHash
+  );
+}
+
+async function ft_transfer(sender_id, amount, token_id) {
+
+    const transactions = [];
+
+      transactions.unshift({
+        receiverId: token_id,
+        functionCalls: [
+          {
+            methodName: 'ft_transfer_call',
+            args: {
+              receiver_id: nearConfig.con,
+              amount: amount,
+              msg: "transfer ft"
+            },
+            amount: new window.nearApi.utils.format.parseNearAmount('0.000000000000000000000001'),
+            gas: '75000000000000'
+          }
+        ]
+      });
+
+      let connectedWalletAccount = window.walletConnection.account();
+
+      let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
+
+      if(!isAccountRegistered) {
+          transactions.unshift({
+            receiverId: token_id,
+            functionCalls: [
+              {
+                methodName: 'storage_deposit',
+                args: {
+                  account_id: sender_id
+                },
+                amount: window.nearApi.utils.format.parseNearAmount('0.2'),
+                gas: '100000000000000'
+              }
+            ]
+          });
+      }
+
+    const currentTransactions = await Promise.all(
+    transactions.map((t, i) => {
+      return setupTransaction({
+          receiverId: t.receiverId,
+          nonceOffset: i + 1,
+          actions: t.functionCalls.map((fc) =>
+            {
+              fc.methodName,
+              fc.args,
+              fc.gas,
+              fc.amount
+            }
+          ),
+        });
+      })
+    );
+
+  window.walletConnection.requestSignTransactions(currentTransactions)
+
 }
