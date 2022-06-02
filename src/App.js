@@ -1,12 +1,17 @@
 //import near from "./assets/css/near.css";
 //import style from "./assets/css/style.css";
 //import "./App.css";
+import React, {useState} from 'react';
 
 import { login, give_up, stop_game} from "./assets/js/near";
 import Script from "./assets/js/script";
 
 
 function App() {
+  const [isRule, setRule] = useState("true");
+  const handleRuleToggle = () => {
+     setRule(!isRule);
+  }
   return (
     <div>
         <div className="column" style={{minHeight: 0, paddingBottom: "30px"}}>
@@ -52,8 +57,8 @@ function App() {
               </div>
             </div>
             <div style={{paddingTop: "10px"}}>
-              <a href="#" onClick="$('#near-game-rules').toggleClass('hidden')">Rules (Click to expand/hide)</a>
-              <div id="near-game-rules" className="hidden">
+              <a href="#" onClick= {handleRuleToggle}>Rules (Click to expand/hide)</a>
+              <div id="near-game-rules" className={isRule ? "hidden" : null }>
                 <ul>
                   <li>Click a checkbox "double jump" on the top of the board before every double jump. Shift key makes the same trick.</li>
                   <li>Set a bid and join waiting list or select an available player to start the game.</li>
