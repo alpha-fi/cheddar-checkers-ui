@@ -1,9 +1,9 @@
-//import near from "./assets/css/near.css";
-//import style from "./assets/css/style.css";
+import "./assets/css/near.css";
+import "./assets/css/style.css";
 //import "./App.css";
 import React, {useState} from 'react';
 
-import { login, give_up, stop_game} from "./assets/js/near";
+//import { give_up, stop_game} from "./assets/js/near";
 import Script from "./assets/js/script";
 
 
@@ -11,6 +11,13 @@ function App() {
   const [isRule, setRule] = useState("true");
   const handleRuleToggle = () => {
      setRule(!isRule);
+  }
+  const give_up = () => {
+
+  }
+
+  const stop_game = () => {
+
   }
   return (
     <div>
