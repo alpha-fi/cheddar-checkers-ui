@@ -1,5 +1,5 @@
-import "./assets/css/near.css";
-import "./assets/css/style.css";
+import near from "./assets/css/near.css";
+import style from "./assets/css/style.css";
 
 import {give_up, stop_game} from "./assets/js/near";
 import Script from "./assets/js/script";
@@ -56,7 +56,7 @@ function App() {
               </div>
             </div>
             <div style={{paddingTop: '10px'}}>
-              <a href="#" onClick="$('#near-game-rules').toggleClass('hidden')">Rules (Click to expand/hide)</a>
+              <a href="#">Rules (Click to expand/hide)</a>
               <div id="near-game-rules" className="hidden">
                 <ul>
                   <li>Click a checkbox "double jump" on the top of the board before every double jump. Shift key makes the same trick.</li>
@@ -114,15 +114,15 @@ function App() {
           </div>
           <div className="account only-after-login">
             <div>
-              <div id="near-account" />
-              <div id="near-account-ref" />
-              <div id="near-action" />
+              <div id="near-account"></div>
+              <div id="near-account-ref"></div>
+              <div id="near-action"></div>
             </div>
           </div>
         </div>
         <div className="column">
-          <div id="board">
-            <div className="tiles" />
+          <div id={style["board"]}>
+            <div className="tiles"></div>
             <div className="pieces">
               <div className="player1pieces">
               </div>
