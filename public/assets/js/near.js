@@ -20,7 +20,7 @@ const nearConfig = {
     
 };
 
-export let current_game_id = -1;
+let current_game_id = -1;
 let loadPlayersInterval;
 let loadGamesInterval;
 let loadGameInterval;
@@ -362,6 +362,7 @@ function login() {
     // user's behalf.
     // This works by creating a new access key for the user's account and storing
     // the private key in localStorage.
+    console.log("Here login");
     window.walletConnection.requestSignIn(nearConfig.contractName, "Near Checkers")
 }
 

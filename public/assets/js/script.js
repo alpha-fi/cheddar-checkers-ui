@@ -370,7 +370,6 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   //select the piece on click if it is the player's turn
   $('.piece').on("click", function () {
     if($(this).hasClass('disabled')){
-      console.log("Here jQuery");
       return;
     }
 

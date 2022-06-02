@@ -1,20 +1,14 @@
-import near from "./assets/css/near.css";
-import style from "./assets/css/style.css";
+//import near from "./assets/css/near.css";
+//import style from "./assets/css/style.css";
+//import "./App.css";
 
-import {give_up, stop_game} from "./assets/js/near";
+import { login, give_up, stop_game} from "./assets/js/near";
 import Script from "./assets/js/script";
 
 
 function App() {
   return (
-    <div>
-        <div>
-        <title>NEAR Checkers (serverless blockchain game)</title>
-        <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" />
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="favicon.png" type="image/x-icon" />
+    <div className="App">
         <div className="column" style={{minHeight: 0, paddingBottom: '30px'}}>
           <div className="info">
             <h1>NEAR Checkers</h1>
@@ -121,7 +115,7 @@ function App() {
           </div>
         </div>
         <div className="column">
-          <div id={style["board"]}>
+          <div id="board">
             <div className="tiles"></div>
             <div className="pieces">
               <div className="player1pieces">
@@ -135,7 +129,6 @@ function App() {
               jump</label>
           </div>
         </div>
-      </div>
     </div>
   );
 }
