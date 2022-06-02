@@ -32,20 +32,20 @@ function App() {
                     <label htmlFor="near-bid-deposit">Join waiting list:</label>
                   </div>
                   <div>
-                    My bid: <input type="text" id="near-bid-deposit" value="0" style={{width: "30px"}}/> NEAR
+                    My bid: <input type="text" id="near-bid-deposit" defaultValue={0} style={{width: "30px"}}/> NEAR
                   </div>
                   <div>
-                    Cheddar bid: <input type="text" id="cheddar-bid-deposit" value="0" style={{width: "30px"}}/> Cheddar
+                    Cheddar bid: <input type="text" id="cheddar-bid-deposit" defaultValue={0} style={{width: "30px"}}/> Cheddar
                   </div>
-                  <input type="button" id="near-make-available" value="Join waiting list"/>
+                  <input type="button" id="near-make-available" defaultValue="Join waiting list"/>
                 </div>
                 <div id="near-make-unavailable-block" className="hidden">
-                  <input type="button" id="near-make-unavailable" value="Leave waiting list"/>
+                  <input type="button" id="near-make-unavailable" defaultValue="Leave waiting list"/>
                 </div>
               </div>
               <div id="near-game" className="hidden">
                 <div id="near-game-turn-block" className="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
-                <div id="near-game-give-up"><input type="button" onClick={give_up} value="Concede"/></div>
+                <div id="near-game-give-up"><input type="button" onClick={give_up} defaultValue="Concede"/></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
                   Reward: <span id="near-game-reward">...</span> NEAR
                 </div>
@@ -86,7 +86,7 @@ function App() {
                 <div id="near-player-1-deposit"></div>
                 <div id="near-player-1-time-spent"></div>
                 <div id="near-player-1-stop-game" className="hidden">
-                  <input type="button" onClick={stop_game} className="centered" value="Stop game and get reward"/>
+                  <input type="button" onClick={stop_game} className="centered" defaultValue="Stop game and get reward"/>
                 </div>
               </div>
               <div id="player2">
@@ -97,7 +97,7 @@ function App() {
                 <div id="near-player-2-deposit"></div>
                 <div id="near-player-2-time-spent"></div>
                 <div id="near-player-2-stop-game" className="hidden">
-                  <input type="button" onClick={stop_game} className="centered" value="Stop game and get reward"/>
+                  <input type="button" onClick={stop_game} className="centered" defaultValue="Stop game and get reward"/>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@ function App() {
           </div>
           <div style={{textAlign: "center"}}>
             <input type="checkbox" id="near-game-double-move"/>
-            <label for="near-game-double-move" style={{color: "#eee"}}>Double 
+            <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
             jump</label>
           </div>
         </div>
