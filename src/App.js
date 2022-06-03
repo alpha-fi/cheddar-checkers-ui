@@ -3,7 +3,7 @@
 //import "./App.css";
 import React, {useState} from 'react';
 
-//import { give_up, stop_game} from "./assets/js/near";
+import { give_up, stop_game} from "./assets/js/near";
 import Script from "./assets/js/script";
 
 
@@ -12,13 +12,15 @@ function App() {
   const handleRuleToggle = () => {
      setRule(!isRule);
   }
-  const give_up = () => {
 
+  const handleGiveUp = () => {
+    window.give_up(); 
   }
 
-  const stop_game = () => {
-
+  const handleStopGame = () => {
+    window.stop_game();
   }
+  
   return (
     <div>
         <div className="column" style={{minHeight: 0, paddingBottom: "30px"}}>
@@ -57,7 +59,7 @@ function App() {
               </div>
               <div id="near-game" className="hidden">
                 <div id="near-game-turn-block" className="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
-                <div id="near-game-give-up"><input type="button" onClick={give_up} defaultValue="Concede"/></div>
+                <div id="near-game-give-up"><input type="button" onClick={handleGiveUp} defaultValue="Concede"/></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
                   Reward: <span id="near-game-reward">...</span> NEAR
                 </div>
@@ -98,7 +100,7 @@ function App() {
                 <div id="near-player-1-deposit"></div>
                 <div id="near-player-1-time-spent"></div>
                 <div id="near-player-1-stop-game" className="hidden">
-                  <input type="button" onClick={stop_game} className="centered" defaultValue="Stop game and get reward"/>
+                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
                 </div>
               </div>
               <div id="player2">
@@ -109,7 +111,7 @@ function App() {
                 <div id="near-player-2-deposit"></div>
                 <div id="near-player-2-time-spent"></div>
                 <div id="near-player-2-stop-game" className="hidden">
-                  <input type="button" onClick={stop_game} className="centered" defaultValue="Stop game and get reward"/>
+                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
                 </div>
               </div>
             </div>
