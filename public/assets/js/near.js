@@ -1,5 +1,5 @@
-const nft_contract = "nft-checkers.near";
-const nft_web4_url = "https://nft-checkers.near.page/style";
+const nft_contract = "checkers.cheddar.testnet";
+const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
