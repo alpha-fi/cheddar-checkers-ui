@@ -1,5 +1,5 @@
-import "./assets/css/near.css";
-import "./assets/css/style.css";
+//import "./assets/css/near.css";
+//import "./assets/css/style.css";
 //import "./App.css";
 import React, {useState} from 'react';
 
@@ -128,7 +128,7 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="column">
+        <div className="column" style={{minHeight: "600px"}}>
           <div id="board">
             <div className="tiles"></div>
             <div className="pieces">
