@@ -1,10 +1,5 @@
-//import "./assets/css/near.css";
-//import "./assets/css/style.css";
-//import "./App.css";
 import React, {useState} from 'react';
 
-import { give_up, stop_game} from "./assets/js/near";
-import Script from "./assets/js/script";
 
 
 function App() {
