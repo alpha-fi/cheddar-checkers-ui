@@ -442,7 +442,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     }
   });
 
-  const GAS_MAKE_AVAILABLE = 500000000000000;
+  const GAS_MAKE_AVAILABLE = 290000000000000;
   $('#near-make-available').on("click", async function () {
     let bidNEAR = parseFloat(document.getElementById("near-bid-deposit").value);
     let bidCheddar = parseFloat(document.getElementById("cheddar-bid-deposit").value);
