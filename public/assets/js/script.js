@@ -448,7 +448,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     let bidCheddar = parseFloat(document.getElementById("cheddar-bid-deposit").value);
     if (bidNEAR >= 0.01) {
       let referrer_id = get_referral();
-      await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
+      await window.contract.make_available({referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
         console.log(resp);
         load();
       });
