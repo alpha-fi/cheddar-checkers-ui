@@ -1,4 +1,4 @@
-const nft_contract = "checkers.cheddar.testnet";
+const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const players_css = ["player-1", "player-2"];
 
