@@ -1,6 +1,13 @@
-const nft_contract = "nft.cheddar.testnet";
-const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
-const players_css = ["player-1", "player-2"];
+import $ from 'jquery';
+import * as nearApi from 'near-api-js';
+import { inizialise_game } from './script';
+import { baseDecode} from 'borsh';
+import { createTransaction } from 'near-api-js/lib/transaction';
+import { PublicKey } from 'near-api-js/lib/utils'
+
+const nft_contract = "nft-checkers.near";
+const nft_web4_url = "https://nft-checkers.near.page/style";
+export const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
     // networkId: 'mainnet',
@@ -20,7 +27,7 @@ const nearConfig = {
     
 };
 
-let current_game_id = -1;
+export let current_game_id = -1;
 let loadPlayersInterval;
 let loadGamesInterval;
 let loadGameInterval;
@@ -103,7 +110,7 @@ function getPlayerByIndex(game, index) {
 let force_reload = false;
 let last_updated_turn = -1;
 
-async function stop_game() {
+export async function stop_game() {
     await window.contract.stop_game({game_id: current_game_id}, GAS_GIVE_UP).then(async resp => {
         force_reload = true;
         await load_game();
@@ -117,8 +124,8 @@ async function stop_game() {
 
 async function load_game() {
     if (current_game_id >= 0) {
-        pieces = [];
-        tiles = [];
+        //let pieces = [];
+        //let tiles = [];
         console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
@@ -259,7 +266,7 @@ function fromatTimestamp(total_seconds) {
 
 }
 
-async function make_move(line) {
+export async function make_move(line) {
     if (current_game_id >= 0) {
         console.log("make_move: " + line);
         await window.contract.make_move({game_id: current_game_id, line}, GAS_MOVE).then(async resp => {
@@ -281,7 +288,7 @@ async function make_move(line) {
     }
 }
 
-async function give_up() {
+export async function give_up() {
     if (current_game_id >= 0) {
         await window.contract.give_up({game_id: current_game_id}, GAS_GIVE_UP, 1).then(async resp => {
             console.log(resp);
@@ -302,17 +309,17 @@ async function loadAvailableGames() {
 async function loadPlayers() {
     console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
-        $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
+        $('#near-available-players-hint').toggleClass('hidden', players.length === 0)
         if (players.length) {
             let current_player_is_available = false;
             let items = players.map(player => {
-                if (!current_player_is_available && player[0] == window.accountId) {
+                if (!current_player_is_available && player[0] === window.accountId) {
                     current_player_is_available = true;
                 }
                 if (player[0] !== window.accountId) {
-                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}")'>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</a>`;
+                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}")'>${player[0]}, bid: ${nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</a>`;
                 } else {
-                    return `<li><strong>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</strong>`;
+                    return `<li><strong>${player[0]}, bid: ${nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</strong>`;
                 }
             });
             $('#near-available-players-list').html('<ul>' + items.join() + '</ul>');
@@ -333,7 +340,7 @@ const GAS_START_GAME = 50000000000000;
 const GAS_GIVE_UP = 50000000000000;
 const GAS_MOVE = 30000000000000;
 
-function get_referral() {
+export function get_referral() {
     try {
         var url = new URL(window.location.href);
         return url.searchParams.get("r");
@@ -343,30 +350,29 @@ function get_referral() {
     }
 }
 
-async function select(player, deposit) {
-    let referrer_id = get_referral();
-    await window.contract.start_game({
-        opponent_id: player,
-        referrer_id
-    }, GAS_START_GAME, deposit).then(resp => console.log(resp));
-}
+// async function select(player, deposit) {
+//     let referrer_id = get_referral();
+//     await window.contract.start_game({
+//         opponent_id: player,
+//         referrer_id
+//     }, GAS_START_GAME, deposit).then(resp => console.log(resp));
+// }
 
-function logout() {
+export function logout() {
     window.walletConnection.signOut()
     // reload page
     window.location.replace(window.location.origin + window.location.pathname)
 }
 
-function login() {
+export function login() {
     // Allow the current app to make calls to the specified contract on the
     // user's behalf.
     // This works by creating a new access key for the user's account and storing
     // the private key in localStorage.
-    console.log("Here login");
     window.walletConnection.requestSignIn(nearConfig.contractName, "Near Checkers")
 }
 
-function loadScript(src, callback) {
+export function loadScript(src, callback) {
     var s,
         r,
         t;
@@ -376,7 +382,7 @@ function loadScript(src, callback) {
     s.src = src;
     s.onload = s.onreadystatechange = function () {
         //console.log( this.readyState ); //uncomment this line to see which ready states are called.
-        if (!r && (!this.readyState || this.readyState == 'complete')) {
+        if (!r && (!this.readyState || this.readyState === 'complete')) {
             r = true;
             callback();
         }
@@ -386,28 +392,28 @@ function loadScript(src, callback) {
 }
 
 
-function after() {
+export function after() {
 
     const nearPromise = (async () => {
 
-        const near = await window.nearApi.connect(Object.assign({deps: {keyStore: new window.nearApi.keyStores.BrowserLocalStorageKeyStore()}}, nearConfig))
+        const near = await nearApi.connect(Object.assign({deps: {keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore()}}, nearConfig))
 
         // Initializing Wallet based Account. It can work with NEAR testnet wallet that
         // is hosted at https://wallet.testnet.near.org
-        window.walletConnection = new window.nearApi.WalletConnection(near)
+        window.walletConnection = new nearApi.WalletConnection(near)
 
         // Getting the Account ID. If still unauthorized, it's just empty string
         window.accountId = window.walletConnection.getAccountId()
 
         // Initializing our contract APIs by contract name and configuration
-        window.contract = await new window.nearApi.Contract(window.walletConnection.account(), nearConfig.contractName, {
+        window.contract = await new nearApi.Contract(window.walletConnection.account(), nearConfig.contractName, {
             // View methods are read only. They don't modify the state, but usually return some value.
             viewMethods: ['get_available_players', 'get_available_games', 'get_game'],
             // Change methods can modify the state. But you don't receive the returned value when called.
             changeMethods: ['make_available', 'make_available_ft', 'start_game', 'make_move', 'give_up', 'make_unavailable', 'stop_game'],
         })
 
-        window.nft_contract = await new window.nearApi.Contract(window.walletConnection.account(), nft_contract, {
+        window.nft_contract = await new nearApi.Contract(window.walletConnection.account(), nft_contract, {
             viewMethods: ['nft_tokens_for_owner'],
         })
 
@@ -436,7 +442,7 @@ function after() {
 }
 
 async function loadPlayerNFT() {
-    if (window.nft_loaded == true || !window.player1 || !window.player2)
+    if (window.nft_loaded === true || !window.player1 || !window.player2)
         return;
 
     window.nft_loaded = true;
@@ -471,7 +477,7 @@ function loadPlayerCss(token_id, index) {
     }
 }
 
-function updateAllPlayersNft() {
+export function updateAllPlayersNft() {
     if (window.nft_tokens && window.nft_tokens.length) {
         [0, 1].map(index => {
             if (window.nft_tokens[index] !== "")
@@ -490,7 +496,7 @@ function updatePlayerNft(index) {
 function replacePlayerNftClass(index) {
     let nft_class = window.nft_tokens[index];
     let player_class = players_css[index];
-    let player_account = index == 1 ? window.player2 : (index == 0 ? window.player1 : "");
+    let player_account = index === 1 ? window.player2 : (index === 0 ? window.player1 : "");
 
     let player_account_css = player_account.replace(".", "_").replace("-", "_");
     let nft_css = nft_class.replace(".", "_").replace(" ", "_").replace("-", "_");
@@ -506,6 +512,7 @@ function replacePlayerNftClass(index) {
 
 
 function reversePlayers(arr) {
+    let i, j;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
             if (arr[i][j] > 0)
@@ -520,6 +527,7 @@ function reversePlayers(arr) {
 function reverseArray(arr) {
     // https://www.geeksforgeeks.org/program-to-reverse-the-rows-in-a-2d-array/
     // Traverse each row of arr
+    let i;
     for (i = 0; i < 8; i++) {
 
         // Initialise start and end index
@@ -566,12 +574,12 @@ async function setupTransaction({ receiverId, actions, nonceOffset = 1}) {
   }
 
   const block = await window.walletConnection.account().connection.provider.block({ finality: 'final' });
-  const blockHash = window.nearApi.utils.serialize.base_decode(block.header.hash);
+  const blockHash = baseDecode(block.header.hash);
 
-  const publicKey = window.nearApi.utils.PublicKey.from(accessKey.public_key);
+  const publicKey = PublicKey.from(accessKey.public_key);
   const nonce = accessKey.access_key.nonce + nonceOffset;
 
-  return window.nearApi.transactions.createTransaction(
+  return createTransaction(
     window.accountId,
     publicKey,
     receiverId,
@@ -581,67 +589,63 @@ async function setupTransaction({ receiverId, actions, nonceOffset = 1}) {
   );
 }
 
-async function ft_transfer(sender_id, amount, token_id) {
+ async function ft_transfer(sender_id, amount, token_id) {
 
-    const transactions = [];
+//     const transactions = [];
 
-      transactions.unshift({
-        receiverId: token_id,
-        functionCalls: [
-          {
-            methodName: 'ft_transfer_call',
-            args: {
-              receiver_id: nearConfig.contractName,
-              amount: amount,
-              msg: "transfer ft"
-            },
-            amount: new window.nearApi.utils.format.parseNearAmount('0.000000000000000000000001'),
-            gas: '75000000000000'
-          }
-        ]
-      });
+//       transactions.unshift({
+//         receiverId: token_id,
+//         functionCalls: [
+//           {
+//             methodName: 'ft_transfer_call',
+//             args: {
+//               receiver_id: nearConfig.con,
+//               amount: amount,
+//               msg: "transfer ft"
+//             },
+//             amount: new nearApi.utils.format.parseNearAmount('0.000000000000000000000001'),
+//             gas: '75000000000000'
+//           }
+//         ]
+//       });
 
-      let connectedWalletAccount = window.walletConnection.account();
+//       let connectedWalletAccount = window.walletConnection.account();
 
-      let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
+//       let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
 
-      if(!isAccountRegistered) {
-          transactions.unshift({
-            receiverId: token_id,
-            functionCalls: [
-              {
-                methodName: 'storage_deposit',
-                args: {
-                  account_id: sender_id
-                },
-                amount: window.nearApi.utils.format.parseNearAmount('0.2'),
-                gas: '100000000000000'
-              }
-            ]
-          });
-      }
+//       if(!isAccountRegistered) {
+//           transactions.unshift({
+//             receiverId: token_id,
+//             functionCalls: [
+//               {
+//                 methodName: 'storage_deposit',
+//                 args: {
+//                   account_id: sender_id
+//                 },
+//                 amount: nearApi.utils.format.parseNearAmount('0.2'),
+//                 gas: '100000000000000'
+//               }
+//             ]
+//           });
+//       }
 
-      console.log("before function");
+//     const currentTransactions = await Promise.all(
+//     transactions.map((t, i) => {
+//       return setupTransaction({
+//           receiverId: t.receiverId,
+//           nonceOffset: i + 1,
+//           actions: t.functionCalls.map((fc) =>
+//             {
+//               fc.methodName,
+//               fc.args,
+//               fc.gas,
+//               fc.amount
+//             }
+//           ),
+//         });
+//       })
+//     );
 
-    const currentTransactions = await Promise.all(
-    transactions.map((t, i) => {
-      return setupTransaction({
-          receiverId: t.receiverId,
-          nonceOffset: i + 1,
-          actions: t.functionCalls.map((fc) =>
-            {
-              fc.methodName,
-              fc.args,
-              fc.gas,
-              fc.amount
-            }
-          ),
-        });
-      })
-    );
-    
-    
-  window.walletConnection.requestSignTransactions(currentTransactions)
-  console.log("wallet after");
+//   window.walletConnection.requestSignTransactions(currentTransactions)
 
-}
+ }

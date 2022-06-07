@@ -1,9 +1,14 @@
+import $ from 'jquery';
+import { make_move, loadScript, after, players_css, current_game_id, get_referral, updateAllPlayersNft} from './near';
+
+
 window.onload = function () {
   loadScript("https://nearspace.info/js/near-api-js.min.js", after);
   inizialise_game();
 };
 
-function inizialise_game(gameBoard, current_player, inverse_colors){
+export function inizialise_game(gameBoard, current_player, inverse_colors){
+  let inverse_cinverse_colorsolors;
   if(current_player === undefined){
     current_player = 1;
   }
@@ -72,9 +77,9 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
       /// player_2
       //make sure piece doesn't go backwards if it's not a king
-      if (this.player == 1 && this.king == false) {
+      if (this.player === 1 && this.king === false) {
         // if (tile.position[0] < this.position[0]) return false;
-      } else if (this.player == 2 && this.king == false) {
+      } else if (this.player === 2 && this.king === false) {
         // if (tile.position[0] > this.position[0]) return false;
       }
 
@@ -112,7 +117,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       this.element.css('top', Board.dictionary[this.position[0]]);
       this.element.css('left', Board.dictionary[this.position[1]]);
       //if piece reaches the end of the row on opposite side crown it a king (can move all directions)
-      if (!this.king && (this.position[0] == 0 || this.position[0] == 7))
+      if (!this.king && (this.position[0] === 0 || this.position[0] === 7))
         this.makeKing();
       return true;
     };
@@ -131,9 +136,9 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       var dx = newPosition[1] - this.position[1];
       var dy = newPosition[0] - this.position[0];
       //make sure object doesn't go backwards if not a king
-      if (this.player == 1 && this.king == false) {
+      if (this.player === 1 && this.king === false) {
         if (newPosition[0] < this.position[0]) return false;
-      } else if (this.player == 2 && this.king == false) {
+      } else if (this.player === 2 && this.king === false) {
         if (newPosition[0] > this.position[0]) return false;
       }
       //must be in bounds
@@ -146,8 +151,8 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       if (!Board.isValidPlacetoMove(tileToChecky, tileToCheckx) && Board.isValidPlacetoMove(newPosition[0], newPosition[1])) {
         //find which object instance is sitting there
         for (let pieceIndex in pieces) {
-          if (pieces[pieceIndex].position[0] == tileToChecky && pieces[pieceIndex].position[1] == tileToCheckx) {
-            if (this.player != pieces[pieceIndex].player) {
+          if (pieces[pieceIndex].position[0] === tileToChecky && pieces[pieceIndex].position[1] === tileToCheckx) {
+            if (this.player !== pieces[pieceIndex].player) {
               //return the piece sitting there
               return pieces[pieceIndex];
             }
@@ -173,11 +178,11 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     this.remove = function () {
       //remove it and delete it from the gameboard
       this.element.css("display", "none");
-      if (this.player == 1) {
+      if (this.player === 1) {
         $('#player2').append("<div class='capturedPiece'></div>");
         Board.score.player2 += 1;
       }
-      if (this.player == 2) {
+      if (this.player === 2) {
         $('#player1').append("<div class='capturedPiece'></div>");
         Board.score.player1 += 1;
       }
@@ -199,17 +204,17 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     //if tile is in range from the piece
     this.inRange = function (piece) {
       for (let k of pieces) {
-        if (k.position[0] == this.position[0] && k.position[1] == this.position[1]) return 'wrong';
+        if (k.position[0] === this.position[0] && k.position[1] === this.position[1]) return 'wrong';
       }
 
       /// player_2
       // if (!piece.king && piece.player == 1 && this.position[0] < piece.position[0]) return 'wrong';
       // if (!piece.king && piece.player == 2 && this.position[0] > piece.position[0]) return 'wrong';
 
-      if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) == Math.sqrt(2)) {
+      if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) === Math.sqrt(2)) {
         //regular move
         return 'regular';
-      } else if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) == 2 * Math.sqrt(2)) {
+      } else if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) === 2 * Math.sqrt(2)) {
         //jump move
         return 'jump';
       }
@@ -238,18 +243,18 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       for (let row in this.board) { //row is the index
         for (let column in this.board[row]) { //column is the index
           //whole set of if statements control where the tiles and pieces should be placed on the board
-          if (row % 2 == 1) {
-            if (column % 2 == 0) {
+          if (row % 2 === 1) {
+            if (column % 2 === 0) {
               countTiles = this.tileRender(row, column, countTiles)
             }
           } else {
-            if (column % 2 == 1) {
+            if (column % 2 === 1) {
               countTiles = this.tileRender(row, column, countTiles)
             }
           }
-          if (Math.abs(this.board[row][column]) == 1) {
+          if (Math.abs(this.board[row][column]) === 1) {
             countPieces = this.playerPiecesRender(this.board[row][column], row, column, countPieces, inverse_colors)
-          } else if (Math.abs(this.board[row][column]) == 2) {
+          } else if (Math.abs(this.board[row][column]) === 2) {
             countPieces = this.playerPiecesRender(this.board[row][column], row, column, countPieces, inverse_colors)
           }
         }
@@ -293,7 +298,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     isValidPlacetoMove: function (row, column) {
       //console.log(row); console.log(column); console.log(this.board);
       if (row < 0 || row > 7 || column < 0 || column > 7) return false;
-      if (this.board[row][column] == 0) {
+      if (this.board[row][column] === 0) {
         return true;
       }
       return false;
@@ -312,16 +317,16 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       return;
     },
     checkifAnybodyWon: function () {
-      if (this.score.player1 == 12) {
+      if (this.score.player1 === 12) {
         return 1;
-      } else if (this.score.player2 == 12) {
+      } else if (this.score.player2 === 12) {
         return 2;
       }
       return false;
     },
     //reset the game
     clear: function () {
-      location.reload();
+     // location.reload();
     },
     check_if_jump_exist: function () {
       this.jumpexist = false
@@ -329,7 +334,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       for (let k of pieces) {
         k.allowedtomove = false;
         // if jump exist, only set those "jump" pieces "allowed to move"
-        if (k.position.length != 0 && k.player == this.playerTurn && k.canJumpAny()) {
+        if (k.position.length !== 0 && k.player === this.playerTurn && k.canJumpAny()) {
           this.jumpexist = true
           k.allowedtomove = true;
         }
@@ -341,12 +346,12 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     },
     // Possibly helpful for communication with back-end.
     str_board: function () {
-      ret = ""
+      let ret = ""
       for (let i in this.board) {
         for (let j in this.board[i]) {
           var found = false
           for (let k of pieces) {
-            if (k.position[0] == i && k.position[1] == j) {
+            if (k.position[0] === i && k.position[1] === j) {
               if (k.king) ret += (this.board[i][j] + 2)
               else ret += this.board[i][j]
               found = true
@@ -374,7 +379,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     }
 
     var selected;
-    var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] == "player" + Board.playerTurn + "pieces");
+    var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] === "player" + Board.playerTurn + "pieces");
     if (isPlayersTurn) {
       if (!Board.continuousjump && pieces[$(this).attr("id")].allowedtomove) {
         if ($(this).hasClass('selected')) selected = true;
@@ -395,7 +400,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   //reset game when clear button is pressed
   $('#cleargame').on("click", async function () {
     current_game_id = -1;
-    load();
+    //load();
     //Board.clear();
     //await loadAvailableGames().then(async (my_games) => update_game_ui(my_games));
   });
@@ -403,7 +408,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   //move piece when tile is clicked
   $('.tile').on("click", function (e) {
     //make sure a piece is selected
-    if ($('.selected').length != 0) {
+    if ($('.selected').length !== 0) {
       //find the tile object being clicked
       var tileID = $(this).attr("id").replace(/tile/, '');
       var tile = tiles[tileID];
@@ -414,9 +419,9 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
       //check if the tile is in range from the object
       var inRange = tile.inRange(piece);
-      if (inRange != 'wrong') {
+      if (inRange !== 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
-        if (inRange == 'jump') {
+        if (inRange === 'jump') {
           if (piece.opponentJump(tile)) {
             piece.move(tile, e);
             if (piece.canJumpAny()) {
@@ -429,7 +434,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
             }
           }
           //if it's regular then move it if no jumping is available
-        } else if (inRange == 'regular' && !Board.jumpexist) {
+        } else if (inRange === 'regular' && !Board.jumpexist) {
           //player_2
           //if (!piece.canJumpAny()) {
             piece.move(tile, e);
@@ -442,7 +447,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     }
   });
 
-  const GAS_MAKE_AVAILABLE = 290000000000000;
+  const GAS_MAKE_AVAILABLE = 50000000000000;
   $('#near-make-available').on("click", async function () {
     let bidNEAR = parseFloat(document.getElementById("near-bid-deposit").value);
     let bidCheddar = parseFloat(document.getElementById("cheddar-bid-deposit").value);
@@ -450,15 +455,14 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       let referrer_id = get_referral();
       await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
         console.log(resp);
-        load();
+        //load();
       });
     } if (bidCheddar >= 1) {
 
-      await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
-        //console.log(resp);
-        console.log("here");
-        load();
-      });
+      // await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
+      //   console.log(resp);
+      //   //load();
+      // });
 
       // await window.contract.make_available_ft({sender_id: window.accountId, amount: 1, token_id: "token-v2.cheddar.testnet"}, GAS_MAKE_AVAILABLE).then(resp => {
       //   console.log(resp);
@@ -471,21 +475,21 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   $('#near-make-unavailable').on("click", async function () {
       await window.contract.make_unavailable().then(resp => {
         console.log(resp);
-        load();
+        //load();
       });
   });
 
   updateAllPlayersNft();
 }
 
-function c1(i, current_player){
+export function c1(i, current_player){
   if(current_player === 2)
     return ['a','b','c','d','e','f','g','h'][parseInt(i)]
   else if(current_player === 1)
     return ['a','b','c','d','e','f','g','h'][7-parseInt(i)]
 }
 
-function c2(i, current_player){
+export function c2(i, current_player){
   if(current_player === 2)
     return (8 - parseInt(i)).toString();
   else if(current_player === 1)
