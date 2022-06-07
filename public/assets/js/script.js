@@ -455,7 +455,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     } if (bidCheddar >= 1) {
 
       await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
-        //console.log(resp);
+        
         console.log("here");
         load();
       });

@@ -553,6 +553,7 @@ async function setupTransaction({ receiverId, actions, nonceOffset = 1}) {
     window.walletConnection.account().connection.networkId
   );
 
+
   let accessKey = await window.walletConnection.account().accessKeyForTransaction(
     receiverId,
     actions,
@@ -602,6 +603,7 @@ async function ft_transfer(sender_id, amount, token_id) {
       });
 
       let connectedWalletAccount = window.walletConnection.account();
+      console.log("account : " + connectedWalletAccount.accountId);
 
       let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
 
@@ -621,27 +623,26 @@ async function ft_transfer(sender_id, amount, token_id) {
           });
       }
 
-      console.log("before function");
+      console.log(transactions);
 
     const currentTransactions = await Promise.all(
-    transactions.map((t, i) => {
+    transactions.map(function(t, i){
       return setupTransaction({
           receiverId: t.receiverId,
           nonceOffset: i + 1,
-          actions: t.functionCalls.map((fc) =>
-            {
-              fc.methodName,
-              fc.args,
-              fc.gas,
-              fc.amount
+          actions: t.functionCalls.map(function(fc, j){
+                return window.nearApi.transactions.functionCall(
+                    fc.methodName,
+                    fc.args,
+                    fc.gas,
+                    fc.amount
+                );
             }
-          ),
+          )
         });
       })
     );
     
-    
-  window.walletConnection.requestSignTransactions(currentTransactions)
-  console.log("wallet after");
-
+  console.log("trx",currentTransactions);  
+  window.walletConnection.requestSignTransactions(currentTransactions);
 }
