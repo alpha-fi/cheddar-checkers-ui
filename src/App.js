@@ -29,7 +29,8 @@ function App() {
               <div id="near-action-login"></div>
             </div>
 
-            <div className="only-after-login">
+            <div className="only-after-login">              
+              <div id="near-account"></div>
               <div id="near-action"></div>
               <div id="near-available-players" className="hidden">
                 <div className="subtitle">Available players<span id="near-available-players-hint" className="hidden"> (click on a player to start a game)</span>:
@@ -120,8 +121,7 @@ function App() {
           </div>
           <div className="account only-after-login">
             <div>
-              <div id="near-account"></div>
-              <div id="near-account-ref"></div>              
+              <div id="near-account-ref"></div>
             </div>
           </div>
         </div>
