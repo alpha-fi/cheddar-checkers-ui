@@ -30,6 +30,7 @@ function App() {
             </div>
 
             <div className="only-after-login">
+              <div id="near-action"></div>
               <div id="near-available-players" className="hidden">
                 <div className="subtitle">Available players<span id="near-available-players-hint" className="hidden"> (click on a player to start a game)</span>:
                 </div>
@@ -120,12 +121,11 @@ function App() {
           <div className="account only-after-login">
             <div>
               <div id="near-account"></div>
-              <div id="near-account-ref"></div>
-              <div id="near-action"></div>
+              <div id="near-account-ref"></div>              
             </div>
           </div>
         </div>
-        <div className="column" style={{minHeight: "600px"}}>
+        <div className="column">
           <div style={{textAlign: "center"}}>
             <input type="checkbox" id="near-game-double-move"/>
             <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
