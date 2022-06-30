@@ -17,7 +17,7 @@ function App() {
   }
   
   return (
-    <div>
+    <div className='game-container'>
         <div className="column" style={{minHeight: 0, paddingBottom: "30px"}}>
           <div className="info">
             <h1>NEAR Checkers</h1>
@@ -126,6 +126,11 @@ function App() {
           </div>
         </div>
         <div className="column" style={{minHeight: "600px"}}>
+          <div style={{textAlign: "center"}}>
+            <input type="checkbox" id="near-game-double-move"/>
+            <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
+            jump</label>
+          </div>
           <div id="board">
             <div className="tiles"></div>
             <div className="pieces">
@@ -134,11 +139,6 @@ function App() {
               <div className="player2pieces">
               </div>
             </div>
-          </div>
-          <div style={{textAlign: "center"}}>
-            <input type="checkbox" id="near-game-double-move"/>
-            <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
-            jump</label>
           </div>
         </div>
 

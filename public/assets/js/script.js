@@ -230,7 +230,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     continuousjump: false,
     tilesElement: $('div.tiles'),
     //dictionary to convert position in Board.board to the viewport units
-    dictionary: ["0vmin", "10vmin", "20vmin", "30vmin", "40vmin", "50vmin", "60vmin", "70vmin", "80vmin", "90vmin"],
+    dictionary: ["0%", "12.5%", "25%", "37.5%", "50%", "62.5%", "75%", "87.5%"],
     //initialize the 8x8 board
     initalize: function () {
       var countPieces = 0;
