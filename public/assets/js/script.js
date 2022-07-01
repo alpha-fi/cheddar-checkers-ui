@@ -257,7 +257,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       //tiles_near = tiles_near.reverse();
     },
     tileRender: function (row, column, countTiles) {
-      this.tilesElement.append("<div class='tile' id='tile" + countTiles + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      this.tilesElement.append(`<div class='tile' id='tile${countTiles}' style='top: ${this.dictionary[row]}; left: ${this.dictionary[column]};'></div>`);
       tiles[countTiles] = new Tile($("#tile" + countTiles), [parseInt(row), parseInt(column)]);
       return countTiles + 1
     },
@@ -280,7 +280,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
       let player_index = !inverse_colors ? playerNumber : [2, 1][playerNumber - 1];
 
-      $(`.player${playerNumber}pieces`).append("<div class='piece " + players_css[player_index - 1] + "' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      $(`.player${playerNumber}pieces`).append(`<div class='piece${players_css[player_index - 1]}' id='${countPieces}' style='top: ${this.dictionary[row]}; left: ${this.dictionary[column]};'></div>`);
       pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)], playerNumber, inverse_colors);
       tiles_near[countPieces] = [['a','b','c','d','e','f','g','h'][parseInt(column)], 8 - parseInt(row)];
       if(makeKing){

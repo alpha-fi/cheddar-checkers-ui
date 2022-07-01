@@ -51,9 +51,9 @@ div.column {
 
 @media screen and (max-width: 1000px) {
   div.column {
-    width: 100% !important;
+    width: 95vw !important;
     overflow: hidden;
-    height: auto; } 
+    height: auto; }
 }
 
 div.info, div.stats, div.account, div.rules {
@@ -227,3 +227,21 @@ div#board .player1pieces .piece {
       background-color: #e4a6ae !important;
       border: 1vmin solid #B93848 !important;
     }
+
+.invitation-input-line {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  flex-wrap: nowrap;
+}
+
+.invitation-input-line input {
+  width: 80%;
+  max-width: 280px;
+}
+
+.invitation-input-line svg {
+  cursor: pointer;
+  margin: 5px;
+}
