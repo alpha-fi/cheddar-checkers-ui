@@ -32,8 +32,8 @@ async function load() {
         clearInterval(loadGamesInterval);
     if (loadGameInterval)
         clearInterval(loadGameInterval);
-    console.log("loadGameInterval")
-    console.log(loadGameInterval)
+    // console.log("loadGameInterval")
+    // console.log(loadGameInterval)
 
     loadAvailableGames().then(async (my_games) => {
         update_game_ui(my_games);
@@ -71,8 +71,8 @@ async function load() {
 
 function update_game_ui(my_games) {
     if (my_games.length) {
-        console.log("Current game found!");
-        console.log(my_games);
+        // console.log("Current game found!");
+        // console.log(my_games);
 
         $('#near-game').removeClass('hidden');
         current_game_id = my_games[0][0];
@@ -119,14 +119,14 @@ async function load_game() {
     if (current_game_id >= 0) {
         pieces = [];
         tiles = [];
-        console.log("current_game_id: " + current_game_id);
+        // console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
                 return;
 
             force_reload = false;
 
-            console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
+            // console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
             let is_turn_availabe = getPlayerByIndex(game, game.current_player_index) === window.accountId;
 
             if (game.turns > -1) {
@@ -147,7 +147,7 @@ async function load_game() {
             await loadPlayerNFT();
 
             if (!force_reload && is_turn_availabe && last_updated_turn === game.turns && game.winner_index === null) {
-                console.log("UI update skipped");
+                // console.log("UI update skipped");
                 return;
             }
 
@@ -155,7 +155,7 @@ async function load_game() {
 
             let selectedPiece = $('.selected').attr("id");
             $('.piece').remove();
-            console.log(game);
+            // console.log(game);
 
             document.getElementById('near-game-player-1').innerText = game.player_1;
             document.getElementById('near-game-player-2').innerText = game.player_2;
@@ -261,7 +261,7 @@ function fromatTimestamp(total_seconds) {
 
 async function make_move(line) {
     if (current_game_id >= 0) {
-        console.log("make_move: " + line);
+        // console.log("make_move: " + line);
         await window.contract.make_move({game_id: current_game_id, line}, GAS_MOVE).then(async resp => {
             force_reload = true;
             await load_game();
@@ -284,23 +284,23 @@ async function make_move(line) {
 async function give_up() {
     if (current_game_id >= 0) {
         await window.contract.give_up({game_id: current_game_id}, GAS_GIVE_UP, 1).then(async resp => {
-            console.log(resp);
+            // console.log(resp);
             await load_game();
         })
     }
 }
 
 async function loadAvailableGames() {
-    console.log("get_available_games");
+    // console.log("get_available_games");
     return await window.contract.get_available_games({from_index: 0, limit: 50}).then(games => {
-        console.log(games)
+        // console.log(games)
         let mygames = games.filter(game => (game[1][0] === window.accountId || game[1][1] === window.accountId));
         return mygames;
     });
 }
 
 async function loadPlayers() {
-    console.log("get_available_players");
+    // console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
         $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
         if (players.length) {
@@ -317,7 +317,7 @@ async function loadPlayers() {
             });
             $('#near-available-players-list').html('<ul>' + items.join() + '</ul>');
 
-            console.log("current_player_is_available " + current_player_is_available)
+            // console.log("current_player_is_available " + current_player_is_available)
             $('#near-make-available-block').toggleClass('hidden', current_player_is_available);
             $('#near-make-unavailable-block').toggleClass('hidden', !current_player_is_available);
         } else {
@@ -362,7 +362,7 @@ function login() {
     // user's behalf.
     // This works by creating a new access key for the user's account and storing
     // the private key in localStorage.
-    console.log("Here login");
+    // console.log("Here login");
     window.walletConnection.requestSignIn(nearConfig.contractName, "Near Checkers")
 }
 
@@ -435,7 +435,7 @@ function after() {
             $('#near-account-ref').html("<div>Invite a friend to get a 10% referral bonus:</div><div class='invitation-input-line'><input class='invitation-code' type='text' value='https://checkers.nearspace.info/?r=" + window.accountId + `'/>'<svg onclick="copyInputValue()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'</div>`);
 
 
-            console.log("Logged in as " + window.accountId);
+            // console.log("Logged in as " + window.accountId);
         }
     })();
 
@@ -461,7 +461,7 @@ async function loadPlayerNFT() {
 }
 
 function loadPlayerCss(token_id, index) {
-    console.log("LOAD TOKEN: " + token_id);
+    // console.log("LOAD TOKEN: " + token_id);
     const cssId = 'nft-css-' + index;
     if (!document.getElementById(cssId)) {
         window.nft_tokens[index] = token_id;
@@ -610,7 +610,7 @@ async function ft_transfer(sender_id, amount, token_id) {
       });
 
       let connectedWalletAccount = window.walletConnection.account();
-      console.log("account : " + connectedWalletAccount.accountId);
+    //   console.log("account : " + connectedWalletAccount.accountId);
 
       let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
 
@@ -630,7 +630,7 @@ async function ft_transfer(sender_id, amount, token_id) {
           });
       }
 
-      console.log(transactions);
+    //   console.log(transactions);
 
     const currentTransactions = await Promise.all(
     transactions.map(function(t, i){
@@ -650,6 +650,6 @@ async function ft_transfer(sender_id, amount, token_id) {
       })
     );
     
-  console.log("trx",currentTransactions);  
+//   console.log("trx",currentTransactions);  
   window.walletConnection.requestSignTransactions(currentTransactions);
 }
