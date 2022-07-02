@@ -54,6 +54,9 @@ div.column {
     width: 95vw !important;
     overflow: hidden;
     height: auto; }
+  .game-container {
+    width: 95vw;
+  }
 }
 
 div.info, div.stats, div.account, div.rules {
@@ -72,6 +75,10 @@ div.rules{
 
 div.account{
   margin-top: 50px;
+}
+
+#near-game-player-1, #near-game-player-2 {
+  overflow-wrap: break-word;
 }
 
 div.stats {

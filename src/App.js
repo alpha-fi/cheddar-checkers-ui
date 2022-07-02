@@ -91,7 +91,7 @@ function App() {
             <div className="wrapper">
               <div id="player1">
                 <h3>
-                  <div style={{paddingBottom: "5px"}}><span id="near-game-player-1" style={{color: "#e4a6ae"}}></span></div>
+                  <div style={{paddingBottom: "5px"}}><p id="near-game-player-1" style={{color: "#e4a6ae"}}></p></div>
                   <div style={{height: "30px"}}><span id="near-active-player-1" className="active-player hidden">(Active)</span></div>
                 </h3>
                 <div id="near-player-1-deposit"></div>
@@ -102,7 +102,7 @@ function App() {
               </div>
               <div id="player2">
                 <h3>
-                  <div style={{paddingBottom: "5px"}}><span id="near-game-player-2" style={{color: "#8b8bff"}}></span></div>
+                  <div style={{paddingBottom: "5px"}}><p id="near-game-player-2" style={{color: "#8b8bff"}}></p></div>
                   <div style={{height: "30px"}}><span id="near-active-player-2" className="active-player hidden">(Active)</span></div>
                 </h3>
                 <div id="near-player-2-deposit"></div>
