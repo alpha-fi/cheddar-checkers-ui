@@ -1,9 +1,9 @@
 window.onload = function () {
   loadScript("https://nearspace.info/js/near-api-js.min.js", after);
-  inizialise_game();
+  inizialise_game(true);
 };
-
-function inizialise_game(gameBoard, current_player, inverse_colors){
+var pieces = [];
+function inizialise_game(draw, gameBoard, current_player, inverse_colors){
   if(current_player === undefined){
     current_player = 1;
   }
@@ -28,7 +28,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   }
 
   //arrays to store the instances
-  var pieces = [];
+  
   var tiles = [];
   var tiles_near = [];
   let move_buffer = "";
@@ -41,13 +41,13 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   function Piece(element, position, playerNumber, inverse_colors) {
     // when jump exist, regular move is not allowed
     // since there is no jump at round 1, all pieces are allowed to move initially
-    this.allowedtomove = true;
+    this.isAllowedToMove = true;
     //linked DOM element
     this.element = element;
     //positions on gameBoard array in format row, column
     this.position = position;
     //which player's piece i it
-    this.player = '';
+    // this.player = '';
     //figure out player by piece id
     /*if (this.element.attr("id") < 12)
       this.player = 1;
@@ -119,6 +119,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
     //tests if piece can jump anywhere
     this.canJumpAny = function () {
+      if(this.player != Board.playerTurn) return false
       return (this.canOpponentJump([this.position[0] + 2, this.position[1] + 2]) ||
         this.canOpponentJump([this.position[0] + 2, this.position[1] - 2]) ||
         this.canOpponentJump([this.position[0] - 2, this.position[1] + 2]) ||
@@ -205,7 +206,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       /// player_2
       // if (!piece.king && piece.player == 1 && this.position[0] < piece.position[0]) return 'wrong';
       // if (!piece.king && piece.player == 2 && this.position[0] > piece.position[0]) return 'wrong';
-
+      
       if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) == Math.sqrt(2)) {
         //regular move
         return 'regular';
@@ -225,7 +226,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     },
     // player_2
     //playerTurn: 1,
-    playerTurn: 1,
+    playerTurn: current_player ? current_player : 0,
     jumpexist: false,
     continuousjump: false,
     tilesElement: $('div.tiles'),
@@ -238,13 +239,15 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       for (let row in this.board) { //row is the index
         for (let column in this.board[row]) { //column is the index
           //whole set of if statements control where the tiles and pieces should be placed on the board
-          if (row % 2 == 1) {
-            if (column % 2 == 0) {
-              countTiles = this.tileRender(row, column, countTiles)
-            }
-          } else {
-            if (column % 2 == 1) {
-              countTiles = this.tileRender(row, column, countTiles)
+          if(draw) {
+            if (row % 2 == 1) {
+              if (column % 2 == 0) {
+                countTiles = this.tileRender(row, column, countTiles)
+              }
+            } else {
+              if (column % 2 == 1) {
+                countTiles = this.tileRender(row, column, countTiles)
+              }
             }
           }
           if (Math.abs(this.board[row][column]) == 1) {
@@ -327,17 +330,20 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       this.jumpexist = false
       this.continuousjump = false;
       for (let k of pieces) {
-        k.allowedtomove = false;
+        k.isAllowedToMove = false;
+        
         // if jump exist, only set those "jump" pieces "allowed to move"
         if (k.position.length != 0 && k.player == this.playerTurn && k.canJumpAny()) {
+          
           this.jumpexist = true
-          k.allowedtomove = true;
+          k.isAllowedToMove = true;
         }
       }
       // if jump doesn't exist, all pieces are allowed to move
       if (!this.jumpexist) {
-        for (let k of pieces) k.allowedtomove = true;
+        for (let k of pieces) k.isAllowedToMove = true;
       }
+      return this.jumpexist
     },
     // Possibly helpful for communication with back-end.
     str_board: function () {
@@ -376,12 +382,16 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     var selected;
     var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] == "player" + Board.playerTurn + "pieces");
     if (isPlayersTurn) {
-      if (!Board.continuousjump && pieces[$(this).attr("id")].allowedtomove) {
+      Board.check_if_jump_exist()
+      // console.log(pieces)
+      if (!Board.continuousjump && pieces[$(this).attr("id")].isAllowedToMove) {
         if ($(this).hasClass('selected')) selected = true;
         $('.piece').each(function (index) {
           $('.piece').eq(index).removeClass('selected')
         });
+        
         if (!selected) {
+           // Sets isAllowedToMove
           $(this).addClass('selected');
         }
       } else {
@@ -413,6 +423,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       var piece = pieces[$('.selected').attr("id")];
 
       //check if the tile is in range from the object
+      console.log("Piece", pieces)
       var inRange = tile.inRange(piece);
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)

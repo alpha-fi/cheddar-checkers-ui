@@ -117,7 +117,7 @@ async function stop_game() {
 
 async function load_game() {
     if (current_game_id >= 0) {
-        pieces = [];
+        // pieces = [];
         tiles = [];
         // console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
@@ -204,20 +204,19 @@ async function load_game() {
 
 
             let board = game.board;
-
             if (game.player_1 === window.accountId) {
                 board = board.reverse();
                 //board = reverseArray(board);
                 //board = reversePlayers(board);
             } else if (game.player_2 === window.accountId) {
                 board = reverseArray(board);
-                board = reversePlayers(board);
+                // board = reversePlayers(board);
             }
 
             let inverse_colors = (game.player_2 === window.accountId);
-
-            inizialise_game(board, [2, 1][parseInt(game.current_player_index)], inverse_colors); // 0 -> 2, 1 -> 1
-
+            inverse_colors = false
+            inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
+            
             if (selectedPiece && is_turn_availabe) {
                 $('#' + selectedPiece).addClass('selected');
             }
@@ -386,9 +385,8 @@ function loadScript(src, callback) {
 }
 
 function copyInputValue(){
-    let copyInput = document.querySelector('.invitation-code');
-    copyInput.select();
-    document.execCommand("copy");
+    let copyInput = document.querySelector('.invitation-code').value;
+    navigator.clipboard.writeText(copyInput);
 }
 
 
