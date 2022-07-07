@@ -73,11 +73,10 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       /// player_2
       //make sure piece doesn't go backwards if it's not a king
       if (this.player == 1 && this.king == false) {
-        if (tile.position[0] < this.position[0]) return false;
+        if (tile.position[0] > this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
         if (tile.position[0] > this.position[0]) return false;
       }
-
       let current_move = c1(this.position[1], current_player) + c2(this.position[0], current_player) + " "
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
         console.log("Current move", current_move)
@@ -134,7 +133,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       var dy = newPosition[0] - this.position[0];
       //make sure object doesn't go backwards if not a king
       if (this.player == 1 && this.king == false) {
-        if (newPosition[0] < this.position[0]) return false;
+        if (newPosition[0] > this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
         if (newPosition[0] > this.position[0]) return false;
       }
@@ -419,12 +418,14 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       var tileID = $(this).attr("id").replace(/tile/, '');
       var tile = tiles[tileID];
       var tile_near = tiles_near[tileID];
-
+      
       //find the piece being selected
       var piece = pieces[$('.selected').attr("id")];
-
+      
       //check if the tile is in range from the object
+      console.log("a verga")
       var inRange = tile.inRange(piece);
+      Board.check_if_jump_exist()
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
         if (inRange == 'jump') {
