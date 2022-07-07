@@ -152,7 +152,7 @@ div.stats {
     div.stats button#cleargame:hover {
       background-color: #0c5a6b; }
 
-input[type=button] {
+.button {
   display: block;
   border: 0;
   color: #F1F1FF;
@@ -163,10 +163,10 @@ input[type=button] {
   background-color: #074998;
   box-shadow: 1px 1px 3px #232621;
   transition: background-color 0.15s linear; }
-input[type=button]:hover {
+.button:hover {
   background-color: #0c5a6b; }
 
-input[type=button].centered {
+.button.centered {
   margin: 20px auto 10px
 }
 
@@ -186,7 +186,14 @@ div#board .tiles {
     width: 12.5%;
     aspect-ratio: 1;
     position: absolute;
-    background-color: #232621; }
+    background-color: #232621; }    
+
+.piece {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 div#board .player1pieces .piece {
   position: absolute;
   width: 10%;
@@ -196,12 +203,11 @@ div#board .player1pieces .piece {
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 100%;
-  display: inline-block;
   box-sizing: border-box;
   transition: all 0.2s linear;
   margin: 1.3%;
   cursor: pointer;
-  border: 1.3% solid #B93848; }
+  border: 1vmin solid #B93848; }
     div#board .player1pieces .piece.selected {
       box-shadow: 0 0 10px 5px #16A8C7; }
 
@@ -219,7 +225,6 @@ div#board .player1pieces .piece {
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 100%;
-    display: inline-block;
     box-sizing: border-box;
     transition: all 0.2s linear;
     margin: 1.3%;
@@ -232,6 +237,10 @@ div#board .player1pieces .piece {
       background-color: #e4a6ae !important;
       border: 1vmin solid #B93848 !important;
     }
+
+.piece img {
+  height: 90%;
+}
 
 .invitation-input-line {
   display: flex;

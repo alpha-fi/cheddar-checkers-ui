@@ -56,12 +56,12 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     this.player = playerNumber;
     //makes object a king
     this.king = false;
-    this.makeKing = function () {
+    this.makeKing = function (countPieces) {
       if(inverse_colors) {
-        this.element.css("backgroundImage", "url('img/king" + (this.player === 1 ? "2" : "1") + ".png')");
+        $(`#${countPieces}`).append(`<img src='./assets/img/king${this.player === 1 ? "2" : "1"}.png' alt='Piece ${countPieces} is king'></img>`)
       }
       else{
-        this.element.css("backgroundImage", "url('img/king" + this.player + ".png')");
+        $(`#${countPieces}`).append(`<img src='./assets/img/king${this.player}.png' alt='Piece ${countPieces} is king'></img>`)
       }
       this.king = true;
     }
@@ -287,7 +287,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)], playerNumber, inverse_colors);
       tiles_near[countPieces] = [['a','b','c','d','e','f','g','h'][parseInt(column)], 8 - parseInt(row)];
       if(makeKing){
-        pieces[countPieces].makeKing();
+        pieces[countPieces].makeKing(countPieces);
       }
 
       return countPieces + 1;

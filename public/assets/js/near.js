@@ -419,13 +419,13 @@ function after() {
         await load();
 
         if (!window.accountId) {
-            $('#near-action-login').html('<input type="button" class="login-button" onclick="login()" value="Log In">');
+            $('#near-action-login').html('<input type="button" class="button login-button" onclick="login()" value="Log In">');
             $('.only-after-login').addClass('hidden');
             $('.only-before-login').removeClass('hidden');
 
         } else {
             $('#near-account').html("Logged in as " + window.accountId);
-            $('#near-action').html('<input type="button" onclick="logout()" value="Log Out">');
+            $('#near-action').html('<input type="button" onclick="logout()" class="button" value="Log Out">');
             $('.only-after-login').removeClass('hidden');
             $('.only-before-login').addClass('hidden');
 

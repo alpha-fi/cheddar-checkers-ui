@@ -48,15 +48,15 @@ function App() {
                   <div>
                     Cheddar bid: <input type="text" id="cheddar-bid-deposit" defaultValue={0} style={{width: "30px"}}/> Cheddar
                   </div>
-                  <input type="button" id="near-make-available" defaultValue="Join waiting list"/>
+                  <button className='button' id="near-make-available">Join waiting list</button>
                 </div>
                 <div id="near-make-unavailable-block" className="hidden">
-                  <input type="button" id="near-make-unavailable" defaultValue="Leave waiting list"/>
+                  <button className='button' id="near-make-unavailable">Leave waiting list</button>
                 </div>
               </div>
               <div id="near-game" className="hidden">
                 <div id="near-game-turn-block" className="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
-                <div id="near-game-give-up"><input type="button" onClick={handleGiveUp} defaultValue="Concede"/></div>
+                <div id="near-game-give-up"><button className='button' onClick={handleGiveUp}>Concede</button></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
                   Reward: <span id="near-game-reward">...</span> NEAR
                 </div>
@@ -97,7 +97,7 @@ function App() {
                 <div id="near-player-1-deposit"></div>
                 <div id="near-player-1-time-spent"></div>
                 <div id="near-player-1-stop-game" className="hidden">
-                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
+                  <button onClick={handleStopGame} className="button centered">Stop game and get reward</button>
                 </div>
               </div>
               <div id="player2">
@@ -108,7 +108,7 @@ function App() {
                 <div id="near-player-2-deposit"></div>
                 <div id="near-player-2-time-spent"></div>
                 <div id="near-player-2-stop-game" className="hidden">
-                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
+                  <button onClick={handleStopGame} className="button centered">Stop game and get reward</button>
                 </div>
               </div>
             </div>
