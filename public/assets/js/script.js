@@ -73,13 +73,14 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       /// player_2
       //make sure piece doesn't go backwards if it's not a king
       if (this.player == 1 && this.king == false) {
-        // if (tile.position[0] < this.position[0]) return false;
+        if (tile.position[0] < this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
-        // if (tile.position[0] > this.position[0]) return false;
+        if (tile.position[0] > this.position[0]) return false;
       }
 
       let current_move = c1(this.position[1], current_player) + c2(this.position[0], current_player) + " "
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
+        console.log("Current move", current_move)
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
       // console.log("double_move: " + double_move);
@@ -240,7 +241,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
         for (let column in this.board[row]) { //column is the index
           //whole set of if statements control where the tiles and pieces should be placed on the board
           if(draw) {
-            if (row % 2 == 1) {
+            if (row % 2 ==  1) {
               if (column % 2 == 0) {
                 countTiles = this.tileRender(row, column, countTiles)
               }
@@ -423,7 +424,6 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       var piece = pieces[$('.selected').attr("id")];
 
       //check if the tile is in range from the object
-      console.log("Piece", pieces)
       var inRange = tile.inRange(piece);
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
@@ -490,16 +490,16 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
 }
 
 function c1(i, current_player){
-  if(current_player === 2)
+  if(current_player === 1)
     return ['a','b','c','d','e','f','g','h'][parseInt(i)]
-  else if(current_player === 1)
+  else if(current_player === 2)
     return ['a','b','c','d','e','f','g','h'][7-parseInt(i)]
 }
 
 function c2(i, current_player){
-  if(current_player === 2)
+  if(current_player === 1)
     return (8 - parseInt(i)).toString();
-  else if(current_player === 1)
+  else if(current_player === 2)
     return (1 + parseInt(i)).toString();
 }
 

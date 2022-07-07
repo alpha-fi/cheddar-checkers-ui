@@ -123,7 +123,6 @@ async function load_game() {
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
                 return;
-
             force_reload = false;
 
             // console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
@@ -525,7 +524,7 @@ function reversePlayers(arr) {
 function reverseArray(arr) {
     // https://www.geeksforgeeks.org/program-to-reverse-the-rows-in-a-2d-array/
     // Traverse each row of arr
-    for (i = 0; i < 8; i++) {
+    for (var i = 0; i < 8; i++) {
 
         // Initialise start and end index
         var start = 0;
