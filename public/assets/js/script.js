@@ -100,7 +100,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       }
       else{
         this.element.removeClass('selected');
-        if(moveWasValidatedBefore) {
+        if(moveWasValidatedBefore && move_buffer != "") {
           make_move(move_buffer);
         } else if (move_buffer) {
           make_move(move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player));

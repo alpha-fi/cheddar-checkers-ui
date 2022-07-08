@@ -5,7 +5,7 @@ const players_css = ["player-1", "player-2"];
 const nearConfig = {
     // networkId: 'mainnet',
     // nodeUrl: 'https://rpc.mainnet.near.org',
-    // contractName: "app.checkers.near",
+    // contractName: "checkers.cheddar.near",
     // walletUrl: 'https://wallet.near.org',
     // helperUrl: 'https://helper.mainnet.near.org',
     // explorerUrl: 'https://explorer.mainnet.near.org',
