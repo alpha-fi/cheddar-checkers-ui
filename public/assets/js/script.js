@@ -16,14 +16,14 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
 
   if (gameBoard === undefined) {
     gameBoard = [
+      [0, 2, 0, 2, 0, 2, 0, 2],
+      [2, 0, 2, 0, 2, 0, 2, 0],
+      [0, 2, 0, 2, 0, 2, 0, 2],
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0]
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0]
     ];
   }
 
@@ -46,6 +46,9 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     this.element = element;
     //positions on gameBoard array in format row, column
     this.position = position;
+    
+    this.movedThisTurn = false;
+    this.tileMovedToThisTurn = undefined
     //which player's piece i it
     // this.player = '';
     //figure out player by piece id
@@ -67,9 +70,10 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     }
     //moves the piece
     this.move = function (tile, e) {
-      this.element.removeClass('selected');
-      if (!Board.isValidPlacetoMove(tile.position[0], tile.position[1])) return false;
-
+      if(!this.movedThisTurn) return
+      const moveWasValidatedBefore = this.tileMovedToThisTurn != undefined
+      if (!moveWasValidatedBefore && !Board.isValidPlacetoMove(tile.position[0], tile.position[1])) return false;
+      
       /// player_2
       //make sure piece doesn't go backwards if it's not a king
       if (this.player == 1 && this.king == false) {
@@ -81,7 +85,9 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
+      console.log(double_move)
       // console.log("double_move: " + double_move);
+      console.log("Move buffer", move_buffer)
       if (double_move) {
         if (move_buffer) {
           move_buffer = move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player)
@@ -93,7 +99,10 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
         // console.log("move_buffer: " + move_buffer)
       }
       else{
-        if (move_buffer) {
+        this.element.removeClass('selected');
+        if(moveWasValidatedBefore) {
+          make_move(move_buffer);
+        } else if (move_buffer) {
           make_move(move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player));
         }
         else {
@@ -101,7 +110,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
         }
         move_buffer = "";
       }
-
+      
 
       //remove the mark from Board.board and put it in the new spot
       Board.board[this.position[0]][this.position[1]] = 0;
@@ -198,6 +207,8 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     this.position = position;
     //if tile is in range from the piece
     this.inRange = function (piece) {
+      console.log(this.position)
+      console.log(pieces.length)
       for (let k of pieces) {
         if (k.position[0] == this.position[0] && k.position[1] == this.position[1]) return 'wrong';
       }
@@ -409,6 +420,14 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     //await loadAvailableGames().then(async (my_games) => update_game_ui(my_games));
   });
 
+  $(document).on("keyup", function(e) {
+    if(e.key == "Shift" && $('.selected').length != 0) {
+      console.log("Hola")
+      var piece = pieces[$('.selected').attr("id")];
+      piece.move(piece.tileMovedToThisTurn, e)
+    }
+  })
+
   //move piece when tile is clicked
   $('.tile').on("click", function (e) {
     //make sure a piece is selected
@@ -423,9 +442,12 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       
       //check if the tile is in range from the object
       var inRange = tile.inRange(piece);
+      console.log(inRange)
       Board.check_if_jump_exist()
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
+        piece.movedThisTurn = true
+        piece.tileMovedToThisTurn = tile
         if (inRange == 'jump') {
           // if (piece.opponentJump(tile)) {
             piece.move(tile, e);

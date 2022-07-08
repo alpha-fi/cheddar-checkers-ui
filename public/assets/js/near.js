@@ -117,7 +117,7 @@ async function stop_game() {
 
 }
 
-async function load_game() {
+async function load_game(force_reload = false) {
     if (current_game_id >= 0) {
         // pieces = [];
         tiles = [];
@@ -125,8 +125,8 @@ async function load_game() {
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
                 return;
-            force_reload = false;
-
+            
+            
             // console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
             let is_turn_availabe = getPlayerByIndex(game, game.current_player_index) === window.accountId;
 
@@ -142,11 +142,10 @@ async function load_game() {
                     $('#near-player-2-stop-game').removeClass('hidden');
                 }
             }
-
             window.player1 = game.player_1;
             window.player2 = game.player_2;
             await loadPlayerNFT();
-
+            
             if (!force_reload && is_turn_availabe && last_updated_turn === game.turns && game.winner_index === null) {
                 // console.log("UI update skipped");
                 return;
@@ -220,6 +219,8 @@ async function load_game() {
 
             let inverse_colors = (game.player_2 === window.accountId);
             inverse_colors = false
+            pieces = []
+            console.log("Reinitializing 1")
             inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
             
             if (selectedPiece && is_turn_availabe) {
@@ -264,6 +265,7 @@ function fromatTimestamp(total_seconds) {
 }
 
 async function make_move(line) {
+    console.log("Move: ", line)
     if (current_game_id >= 0) {
         // console.log("make_move: " + line);
         await window.contract.make_move({game_id: current_game_id, line}, GAS_MOVE).then(async resp => {
@@ -279,8 +281,7 @@ async function make_move(line) {
             } else {
                 alert(e);
             }
-
-            await load_game();
+            await load_game(true);
         });
     }
 }
