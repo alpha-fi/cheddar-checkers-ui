@@ -48,6 +48,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
     this.position = position;
     
     this.movedThisTurn = false;
+    this.movedWithCheckbox = false;
     this.tileMovedToThisTurn = undefined
     //which player's piece i it
     // this.player = '';
@@ -89,6 +90,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       // console.log("double_move: " + double_move);
       console.log("Move buffer", move_buffer)
       if (double_move) {
+        this.movedWithCheckbox = document.getElementById('near-game-double-move').checked
         if (move_buffer) {
           move_buffer = move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player)
         }
@@ -100,7 +102,9 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       }
       else{
         this.element.removeClass('selected');
-        if(moveWasValidatedBefore && move_buffer != "") {
+        console.log(!this.movedWithCheckbox)
+        console.log(move_buffer != "")
+        if(!this.movedWithCheckbox && move_buffer != "") {
           make_move(move_buffer);
         } else if (move_buffer) {
           make_move(move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player));
