@@ -79,7 +79,6 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       }
       let current_move = c1(this.position[1], current_player) + c2(this.position[0], current_player) + " "
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
-        console.log("Current move", current_move)
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
       // console.log("double_move: " + double_move);
@@ -158,38 +157,38 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       return false;
     };
 
-    this.opponentJump = function (tile) {
-      // player_2
-      return true;
+    // this.opponentJump = function (tile) {
+    //   // player_2
+    //   return true;
 
-      var pieceToRemove = this.canOpponentJump(tile.position);
-      //if there is a piece to be removed, remove it
-      if (pieceToRemove) {
-        pieceToRemove.remove();
-        return true;
-      }
-      return false;
-    };
+    //   var pieceToRemove = this.canOpponentJump(tile.position);
+    //   //if there is a piece to be removed, remove it
+    //   if (pieceToRemove) {
+    //     pieceToRemove.remove();
+    //     return true;
+    //   }
+    //   return false;
+    // };
 
-    this.remove = function () {
-      //remove it and delete it from the gameboard
-      this.element.css("display", "none");
-      if (this.player == 1) {
-        $('#player2').append("<div class='capturedPiece'></div>");
-        Board.score.player2 += 1;
-      }
-      if (this.player == 2) {
-        $('#player1').append("<div class='capturedPiece'></div>");
-        Board.score.player1 += 1;
-      }
-      Board.board[this.position[0]][this.position[1]] = 0;
-      //reset position so it doesn't get picked up by the for loop in the canOpponentJump method
-      this.position = [];
-      var playerWon = Board.checkifAnybodyWon();
-      if (playerWon) {
-        $('#winner').html("Player " + playerWon + " has won!");
-      }
-    }
+    // this.remove = function () {
+    //   //remove it and delete it from the gameboard
+    //   this.element.css("display", "none");
+    //   if (this.player == 1) {
+    //     $('#player2').append("<div class='capturedPiece'></div>");
+    //     Board.score.player2 += 1;
+    //   }
+    //   if (this.player == 2) {
+    //     $('#player1').append("<div class='capturedPiece'></div>");
+    //     Board.score.player1 += 1;
+    //   }
+    //   Board.board[this.position[0]][this.position[1]] = 0;
+    //   //reset position so it doesn't get picked up by the for loop in the canOpponentJump method
+    //   this.position = [];
+    //   var playerWon = Board.checkifAnybodyWon();
+    //   if (playerWon) {
+    //     $('#winner').html("Player " + playerWon + " has won!");
+    //   }
+    // }
   }
 
   function Tile(element, position) {
@@ -314,14 +313,14 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       this.check_if_jump_exist()
       return;
     },
-    checkifAnybodyWon: function () {
-      if (this.score.player1 == 12) {
-        return 1;
-      } else if (this.score.player2 == 12) {
-        return 2;
-      }
-      return false;
-    },
+    // checkifAnybodyWon: function () {
+    //   if (this.score.player1 == 12) {
+    //     return 1;
+    //   } else if (this.score.player2 == 12) {
+    //     return 2;
+    //   }
+    //   return false;
+    // },
     //reset the game
     clear: function () {
       location.reload();
@@ -423,13 +422,12 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       var piece = pieces[$('.selected').attr("id")];
       
       //check if the tile is in range from the object
-      console.log("a verga")
       var inRange = tile.inRange(piece);
       Board.check_if_jump_exist()
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
         if (inRange == 'jump') {
-          if (piece.opponentJump(tile)) {
+          // if (piece.opponentJump(tile)) {
             piece.move(tile, e);
             if (piece.canJumpAny()) {
               // Board.changePlayerTurn(); //change back to original since another turn can be made
@@ -439,7 +437,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
             } else {
               Board.changePlayerTurn()
             }
-          }
+          // }
           //if it's regular then move it if no jumping is available
         } else if (inRange == 'regular' && !Board.jumpexist) {
           //player_2
@@ -480,11 +478,9 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       alert("Bid should be > 0.01 NEAR or > 1 Cheddar")
     }
   });
-  $('#near-make-unavailable').on("click", async function () {
-      await window.contract.make_unavailable().then(resp => {
-        // console.log(resp);
-        load();
-      });
+  $('#near-make-unavailable').on("click", function () {
+    window.contract.make_unavailable()
+    load();
   });
 
   updateAllPlayersNft();

@@ -70,6 +70,7 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
+    console.log(my_games)
     if (my_games.length) {
         // console.log("Current game found!");
         // console.log(my_games);
@@ -82,6 +83,7 @@ function update_game_ui(my_games) {
         $('#near-make-available-block').addClass('hidden');
         $('#near-make-unavailable-block').addClass('hidden');
     } else {
+        // ESTO ES LO QUE COMENTE $("#near-make-unavailable").addClass("hidden")
         $('#near-waiting-list').removeClass('hidden');
         $('#near-available-players').removeClass('hidden');
     }
@@ -169,6 +171,10 @@ async function load_game() {
                 document.getElementById('near-game-reward').innerText = nearApi.utils.format.formatNearAmount(game.reward.balance, 2);
                 $('#near-game-give-up').addClass('hidden');
                 $('#near-game-turn').addClass('hidden');
+                $('#near-available-players').removeClass('hidden')
+                $('#near-waiting-list').removeClass('hidden')
+                $('#near-make-available-block').removeClass('hidden')
+                $('#near-game-turn-block').addClass('hidden')
             } else{
                 $('#near-game-finished').addClass('hidden');
                 $('#near-game-give-up').removeClass('hidden');

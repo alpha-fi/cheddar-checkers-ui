@@ -58,6 +58,7 @@ function App() {
                 <div id="near-game-turn-block" className="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
                 <div id="near-game-give-up"><button className='button' onClick={handleGiveUp}>Concede</button></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
+                  <br></br>
                   Reward: <span id="near-game-reward">...</span> NEAR
                 </div>
               </div>
