@@ -1,22 +1,24 @@
 const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
+export const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
+// export const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
-    // networkId: 'mainnet',
-    // nodeUrl: 'https://rpc.mainnet.near.org',
-    // contractName: "checkers.cheddar.near",
-    // walletUrl: 'https://wallet.near.org',
-    // helperUrl: 'https://helper.mainnet.near.org',
-    // explorerUrl: 'https://explorer.mainnet.near.org',
+    networkId: 'mainnet',
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    contractName: "checkers.cheddar.near",
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',
 
     
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-    contractName: "checkers.cheddar.testnet",
-    walletUrl: 'https://wallet.testnet.near.org',
-    helperUrl: 'https://helper.testnet.near.org',
-    explorerUrl: 'https://explorer.testnet.near.org',
+    // networkId: 'testnet',
+    // nodeUrl: 'https://rpc.testnet.near.org',
+    // contractName: "checkers.cheddar.testnet",
+    // walletUrl: 'https://wallet.testnet.near.org',
+    // helperUrl: 'https://helper.testnet.near.org',
+    // explorerUrl: 'https://explorer.testnet.near.org',
     
 };
 

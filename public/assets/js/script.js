@@ -1,3 +1,5 @@
+import { CHEDDAR_TOKEN_CONTRACT } from "./near";
+
 window.onload = function () {
   loadScript("https://nearspace.info/js/near-api-js.min.js", after);
   inizialise_game(true);
@@ -490,7 +492,7 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       });
     } if (bidCheddar >= 1) {
 
-      await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
+      await ft_transfer(window.accountId, bidCheddar, CHEDDAR_TOKEN_CONTRACT).then(resp => {
         
         // console.log("here");
         load();
