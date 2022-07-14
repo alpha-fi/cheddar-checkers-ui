@@ -1,9 +1,11 @@
+import { CHEDDAR_TOKEN_CONTRACT } from "./near";
+
 window.onload = function () {
   loadScript("https://nearspace.info/js/near-api-js.min.js", after);
-  inizialise_game();
+  inizialise_game(true);
 };
-
-function inizialise_game(gameBoard, current_player, inverse_colors){
+var pieces = [];
+function inizialise_game(draw, gameBoard, current_player, inverse_colors){
   if(current_player === undefined){
     current_player = 1;
   }
@@ -11,24 +13,24 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   if(inverse_colors === undefined)
     inverse_cinverse_colorsolors = false;
 
-  console.log("current_player: " + current_player);
-  console.log("inverse_colors: " + inverse_colors);
+  // console.log("current_player: " + current_player);
+  // console.log("inverse_colors: " + inverse_colors);
 
   if (gameBoard === undefined) {
     gameBoard = [
+      [0, 2, 0, 2, 0, 2, 0, 2],
+      [2, 0, 2, 0, 2, 0, 2, 0],
+      [0, 2, 0, 2, 0, 2, 0, 2],
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0]
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0]
     ];
   }
 
   //arrays to store the instances
-  var pieces = [];
+  
   var tiles = [];
   var tiles_near = [];
   let move_buffer = "";
@@ -41,13 +43,17 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
   function Piece(element, position, playerNumber, inverse_colors) {
     // when jump exist, regular move is not allowed
     // since there is no jump at round 1, all pieces are allowed to move initially
-    this.allowedtomove = true;
+    this.isAllowedToMove = true;
     //linked DOM element
     this.element = element;
     //positions on gameBoard array in format row, column
     this.position = position;
+    
+    this.movedThisTurn = false;
+    this.movedWithCheckbox = false;
+    this.tileMovedToThisTurn = undefined
     //which player's piece i it
-    this.player = '';
+    // this.player = '';
     //figure out player by piece id
     /*if (this.element.attr("id") < 12)
       this.player = 1;
@@ -56,34 +62,37 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     this.player = playerNumber;
     //makes object a king
     this.king = false;
-    this.makeKing = function () {
+    this.makeKing = function (countPieces) {
       if(inverse_colors) {
-        this.element.css("backgroundImage", "url('img/king" + (this.player === 1 ? "2" : "1") + ".png')");
+        $(`#${countPieces}`).append(`<img src='./assets/img/king${this.player === 1 ? "2" : "1"}.png' alt='Piece ${countPieces} is king'></img>`)
       }
       else{
-        this.element.css("backgroundImage", "url('img/king" + this.player + ".png')");
+        $(`#${countPieces}`).append(`<img src='./assets/img/king${this.player}.png' alt='Piece ${countPieces} is king'></img>`)
       }
       this.king = true;
     }
     //moves the piece
     this.move = function (tile, e) {
-      this.element.removeClass('selected');
-      if (!Board.isValidPlacetoMove(tile.position[0], tile.position[1])) return false;
-
+      if(!this.movedThisTurn) return
+      const moveWasValidatedBefore = this.tileMovedToThisTurn != undefined
+      if (!moveWasValidatedBefore && !Board.isValidPlacetoMove(tile.position[0], tile.position[1])) return false;
+      
       /// player_2
       //make sure piece doesn't go backwards if it's not a king
       if (this.player == 1 && this.king == false) {
-        // if (tile.position[0] < this.position[0]) return false;
+        if (tile.position[0] > this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
-        // if (tile.position[0] > this.position[0]) return false;
+        if (tile.position[0] > this.position[0]) return false;
       }
-
       let current_move = c1(this.position[1], current_player) + c2(this.position[0], current_player) + " "
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
-      console.log("double_move: " + double_move);
+      console.log(double_move)
+      // console.log("double_move: " + double_move);
+      console.log("Move buffer", move_buffer)
       if (double_move) {
+        this.movedWithCheckbox = document.getElementById('near-game-double-move').checked
         if (move_buffer) {
           move_buffer = move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player)
         }
@@ -91,10 +100,15 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
           move_buffer = current_move;
         }
         document.getElementById("near-game-double-move").checked = false;
-        console.log("move_buffer: " + move_buffer)
+        // console.log("move_buffer: " + move_buffer)
       }
       else{
-        if (move_buffer) {
+        this.element.removeClass('selected');
+        console.log(!this.movedWithCheckbox)
+        console.log(move_buffer != "")
+        if(!this.movedWithCheckbox && move_buffer != "") {
+          make_move(move_buffer);
+        } else if (move_buffer) {
           make_move(move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player));
         }
         else {
@@ -102,7 +116,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
         }
         move_buffer = "";
       }
-
+      
 
       //remove the mark from Board.board and put it in the new spot
       Board.board[this.position[0]][this.position[1]] = 0;
@@ -119,6 +133,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
     //tests if piece can jump anywhere
     this.canJumpAny = function () {
+      if(this.player != Board.playerTurn) return false
       return (this.canOpponentJump([this.position[0] + 2, this.position[1] + 2]) ||
         this.canOpponentJump([this.position[0] + 2, this.position[1] - 2]) ||
         this.canOpponentJump([this.position[0] - 2, this.position[1] + 2]) ||
@@ -132,7 +147,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       var dy = newPosition[0] - this.position[0];
       //make sure object doesn't go backwards if not a king
       if (this.player == 1 && this.king == false) {
-        if (newPosition[0] < this.position[0]) return false;
+        if (newPosition[0] > this.position[0]) return false;
       } else if (this.player == 2 && this.king == false) {
         if (newPosition[0] > this.position[0]) return false;
       }
@@ -157,38 +172,38 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       return false;
     };
 
-    this.opponentJump = function (tile) {
-      // player_2
-      return true;
+    // this.opponentJump = function (tile) {
+    //   // player_2
+    //   return true;
 
-      var pieceToRemove = this.canOpponentJump(tile.position);
-      //if there is a piece to be removed, remove it
-      if (pieceToRemove) {
-        pieceToRemove.remove();
-        return true;
-      }
-      return false;
-    };
+    //   var pieceToRemove = this.canOpponentJump(tile.position);
+    //   //if there is a piece to be removed, remove it
+    //   if (pieceToRemove) {
+    //     pieceToRemove.remove();
+    //     return true;
+    //   }
+    //   return false;
+    // };
 
-    this.remove = function () {
-      //remove it and delete it from the gameboard
-      this.element.css("display", "none");
-      if (this.player == 1) {
-        $('#player2').append("<div class='capturedPiece'></div>");
-        Board.score.player2 += 1;
-      }
-      if (this.player == 2) {
-        $('#player1').append("<div class='capturedPiece'></div>");
-        Board.score.player1 += 1;
-      }
-      Board.board[this.position[0]][this.position[1]] = 0;
-      //reset position so it doesn't get picked up by the for loop in the canOpponentJump method
-      this.position = [];
-      var playerWon = Board.checkifAnybodyWon();
-      if (playerWon) {
-        $('#winner').html("Player " + playerWon + " has won!");
-      }
-    }
+    // this.remove = function () {
+    //   //remove it and delete it from the gameboard
+    //   this.element.css("display", "none");
+    //   if (this.player == 1) {
+    //     $('#player2').append("<div class='capturedPiece'></div>");
+    //     Board.score.player2 += 1;
+    //   }
+    //   if (this.player == 2) {
+    //     $('#player1').append("<div class='capturedPiece'></div>");
+    //     Board.score.player1 += 1;
+    //   }
+    //   Board.board[this.position[0]][this.position[1]] = 0;
+    //   //reset position so it doesn't get picked up by the for loop in the canOpponentJump method
+    //   this.position = [];
+    //   var playerWon = Board.checkifAnybodyWon();
+    //   if (playerWon) {
+    //     $('#winner').html("Player " + playerWon + " has won!");
+    //   }
+    // }
   }
 
   function Tile(element, position) {
@@ -198,6 +213,8 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     this.position = position;
     //if tile is in range from the piece
     this.inRange = function (piece) {
+      console.log(this.position)
+      console.log(pieces.length)
       for (let k of pieces) {
         if (k.position[0] == this.position[0] && k.position[1] == this.position[1]) return 'wrong';
       }
@@ -205,7 +222,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       /// player_2
       // if (!piece.king && piece.player == 1 && this.position[0] < piece.position[0]) return 'wrong';
       // if (!piece.king && piece.player == 2 && this.position[0] > piece.position[0]) return 'wrong';
-
+      
       if (dist(this.position[0], this.position[1], piece.position[0], piece.position[1]) == Math.sqrt(2)) {
         //regular move
         return 'regular';
@@ -225,12 +242,12 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     },
     // player_2
     //playerTurn: 1,
-    playerTurn: 1,
+    playerTurn: current_player ? current_player : 0,
     jumpexist: false,
     continuousjump: false,
     tilesElement: $('div.tiles'),
     //dictionary to convert position in Board.board to the viewport units
-    dictionary: ["0vmin", "10vmin", "20vmin", "30vmin", "40vmin", "50vmin", "60vmin", "70vmin", "80vmin", "90vmin"],
+    dictionary: ["0%", "12.5%", "25%", "37.5%", "50%", "62.5%", "75%", "87.5%"],
     //initialize the 8x8 board
     initalize: function () {
       var countPieces = 0;
@@ -238,13 +255,15 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       for (let row in this.board) { //row is the index
         for (let column in this.board[row]) { //column is the index
           //whole set of if statements control where the tiles and pieces should be placed on the board
-          if (row % 2 == 1) {
-            if (column % 2 == 0) {
-              countTiles = this.tileRender(row, column, countTiles)
-            }
-          } else {
-            if (column % 2 == 1) {
-              countTiles = this.tileRender(row, column, countTiles)
+          if(draw) {
+            if (row % 2 ==  1) {
+              if (column % 2 == 0) {
+                countTiles = this.tileRender(row, column, countTiles)
+              }
+            } else {
+              if (column % 2 == 1) {
+                countTiles = this.tileRender(row, column, countTiles)
+              }
             }
           }
           if (Math.abs(this.board[row][column]) == 1) {
@@ -257,7 +276,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       //tiles_near = tiles_near.reverse();
     },
     tileRender: function (row, column, countTiles) {
-      this.tilesElement.append("<div class='tile' id='tile" + countTiles + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      this.tilesElement.append(`<div class='tile' id='tile${countTiles}' style='top: ${this.dictionary[row]}; left: ${this.dictionary[column]};'></div>`);
       tiles[countTiles] = new Tile($("#tile" + countTiles), [parseInt(row), parseInt(column)]);
       return countTiles + 1
     },
@@ -280,11 +299,11 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
 
       let player_index = !inverse_colors ? playerNumber : [2, 1][playerNumber - 1];
 
-      $(`.player${playerNumber}pieces`).append("<div class='piece " + players_css[player_index - 1] + "' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      $(`.player${playerNumber}pieces`).append(`<div class='piece ${players_css[player_index - 1]}' id='${countPieces}' style='top: ${this.dictionary[row]}; left: ${this.dictionary[column]};'></div>`);
       pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)], playerNumber, inverse_colors);
       tiles_near[countPieces] = [['a','b','c','d','e','f','g','h'][parseInt(column)], 8 - parseInt(row)];
       if(makeKing){
-        pieces[countPieces].makeKing();
+        pieces[countPieces].makeKing(countPieces);
       }
 
       return countPieces + 1;
@@ -311,14 +330,14 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       this.check_if_jump_exist()
       return;
     },
-    checkifAnybodyWon: function () {
-      if (this.score.player1 == 12) {
-        return 1;
-      } else if (this.score.player2 == 12) {
-        return 2;
-      }
-      return false;
-    },
+    // checkifAnybodyWon: function () {
+    //   if (this.score.player1 == 12) {
+    //     return 1;
+    //   } else if (this.score.player2 == 12) {
+    //     return 2;
+    //   }
+    //   return false;
+    // },
     //reset the game
     clear: function () {
       location.reload();
@@ -327,17 +346,20 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       this.jumpexist = false
       this.continuousjump = false;
       for (let k of pieces) {
-        k.allowedtomove = false;
+        k.isAllowedToMove = false;
+        
         // if jump exist, only set those "jump" pieces "allowed to move"
         if (k.position.length != 0 && k.player == this.playerTurn && k.canJumpAny()) {
+          
           this.jumpexist = true
-          k.allowedtomove = true;
+          k.isAllowedToMove = true;
         }
       }
       // if jump doesn't exist, all pieces are allowed to move
       if (!this.jumpexist) {
-        for (let k of pieces) k.allowedtomove = true;
+        for (let k of pieces) k.isAllowedToMove = true;
       }
+      return this.jumpexist
     },
     // Possibly helpful for communication with back-end.
     str_board: function () {
@@ -376,12 +398,16 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     var selected;
     var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] == "player" + Board.playerTurn + "pieces");
     if (isPlayersTurn) {
-      if (!Board.continuousjump && pieces[$(this).attr("id")].allowedtomove) {
+      Board.check_if_jump_exist()
+      // console.log(pieces)
+      if (!Board.continuousjump && pieces[$(this).attr("id")].isAllowedToMove) {
         if ($(this).hasClass('selected')) selected = true;
         $('.piece').each(function (index) {
           $('.piece').eq(index).removeClass('selected')
         });
+        
         if (!selected) {
+           // Sets isAllowedToMove
           $(this).addClass('selected');
         }
       } else {
@@ -400,6 +426,14 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     //await loadAvailableGames().then(async (my_games) => update_game_ui(my_games));
   });
 
+  $(document).on("keyup", function(e) {
+    if(e.key == "Shift" && $('.selected').length != 0) {
+      console.log("Hola")
+      var piece = pieces[$('.selected').attr("id")];
+      piece.move(piece.tileMovedToThisTurn, e)
+    }
+  })
+
   //move piece when tile is clicked
   $('.tile').on("click", function (e) {
     //make sure a piece is selected
@@ -408,16 +442,20 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       var tileID = $(this).attr("id").replace(/tile/, '');
       var tile = tiles[tileID];
       var tile_near = tiles_near[tileID];
-
+      
       //find the piece being selected
       var piece = pieces[$('.selected').attr("id")];
-
+      
       //check if the tile is in range from the object
       var inRange = tile.inRange(piece);
+      console.log(inRange)
+      Board.check_if_jump_exist()
       if (inRange != 'wrong') {
         //if the move needed is jump, then move it but also check if another move can be made (double and triple jumps)
+        piece.movedThisTurn = true
+        piece.tileMovedToThisTurn = tile
         if (inRange == 'jump') {
-          if (piece.opponentJump(tile)) {
+          // if (piece.opponentJump(tile)) {
             piece.move(tile, e);
             if (piece.canJumpAny()) {
               // Board.changePlayerTurn(); //change back to original since another turn can be made
@@ -427,7 +465,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
             } else {
               Board.changePlayerTurn()
             }
-          }
+          // }
           //if it's regular then move it if no jumping is available
         } else if (inRange == 'regular' && !Board.jumpexist) {
           //player_2
@@ -449,14 +487,14 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
     if (bidNEAR >= 0.01) {
       let referrer_id = get_referral();
       await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
-        console.log(resp);
+        // console.log(resp);
         load();
       });
     } if (bidCheddar >= 1) {
 
-      await ft_transfer(window.accountId, bidCheddar, "token-v3.cheddar.testnet").then(resp => {
+      await ft_transfer(window.accountId, bidCheddar, CHEDDAR_TOKEN_CONTRACT).then(resp => {
         
-        console.log("here");
+        // console.log("here");
         load();
       });
 
@@ -468,6 +506,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       alert("Bid should be > 0.01 NEAR or > 1 Cheddar")
     }
   });
+
 $('#near-make-unavailable').on("click", async function () {
 
       let player = null
@@ -501,16 +540,16 @@ $('#near-make-unavailable').on("click", async function () {
 }
 
 function c1(i, current_player){
-  if(current_player === 2)
+  if(current_player === 1)
     return ['a','b','c','d','e','f','g','h'][parseInt(i)]
-  else if(current_player === 1)
+  else if(current_player === 2)
     return ['a','b','c','d','e','f','g','h'][7-parseInt(i)]
 }
 
 function c2(i, current_player){
-  if(current_player === 2)
+  if(current_player === 1)
     return (8 - parseInt(i)).toString();
-  else if(current_player === 1)
+  else if(current_player === 2)
     return (1 + parseInt(i)).toString();
 }
 

@@ -17,7 +17,7 @@ function App() {
   }
   
   return (
-    <div>
+    <div className='game-container'>
         <div className="column" style={{minHeight: 0, paddingBottom: "30px"}}>
           <div className="info">
             <h1>NEAR Checkers</h1>
@@ -29,7 +29,9 @@ function App() {
               <div id="near-action-login"></div>
             </div>
 
-            <div className="only-after-login">
+            <div className="only-after-login">              
+              <div id="near-account"></div>
+              <div id="near-action"></div>
               <div id="near-available-players" className="hidden">
                 <div className="subtitle">Available players<span id="near-available-players-hint" className="hidden"> (click on a player to start a game)</span>:
                 </div>
@@ -46,16 +48,17 @@ function App() {
                   <div>
                     Cheddar bid: <input type="text" id="cheddar-bid-deposit" defaultValue={0} style={{width: "30px"}}/> Cheddar
                   </div>
-                  <input type="button" id="near-make-available" defaultValue="Join waiting list"/>
+                  <button className='button' id="near-make-available">Join waiting list</button>
                 </div>
                 <div id="near-make-unavailable-block" className="hidden">
-                  <input type="button" id="near-make-unavailable" defaultValue="Leave waiting list"/>
+                  <button className='button' id="near-make-unavailable">Leave waiting list</button>
                 </div>
               </div>
               <div id="near-game" className="hidden">
                 <div id="near-game-turn-block" className="subtitle">There is an ongoing game on turn #<span id="near-game-turn">...</span></div>
-                <div id="near-game-give-up"><input type="button" onClick={handleGiveUp} defaultValue="Concede"/></div>
+                <div id="near-game-give-up"><button className='button' onClick={handleGiveUp}>Concede</button></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
+                  <br></br>
                   Reward: <span id="near-game-reward">...</span> NEAR
                 </div>
               </div>
@@ -89,24 +92,24 @@ function App() {
             <div className="wrapper">
               <div id="player1">
                 <h3>
-                  <div style={{paddingBottom: "5px"}}><span id="near-game-player-1" style={{color: "#e4a6ae"}}></span></div>
+                  <div style={{paddingBottom: "5px"}}><p id="near-game-player-1" style={{color: "#e4a6ae"}}></p></div>
                   <div style={{height: "30px"}}><span id="near-active-player-1" className="active-player hidden">(Active)</span></div>
                 </h3>
                 <div id="near-player-1-deposit"></div>
                 <div id="near-player-1-time-spent"></div>
                 <div id="near-player-1-stop-game" className="hidden">
-                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
+                  <button onClick={handleStopGame} className="button centered">Stop game and get reward</button>
                 </div>
               </div>
               <div id="player2">
                 <h3>
-                  <div style={{paddingBottom: "5px"}}><span id="near-game-player-2" style={{color: "#8b8bff"}}></span></div>
+                  <div style={{paddingBottom: "5px"}}><p id="near-game-player-2" style={{color: "#8b8bff"}}></p></div>
                   <div style={{height: "30px"}}><span id="near-active-player-2" className="active-player hidden">(Active)</span></div>
                 </h3>
                 <div id="near-player-2-deposit"></div>
                 <div id="near-player-2-time-spent"></div>
                 <div id="near-player-2-stop-game" className="hidden">
-                  <input type="button" onClick={handleStopGame} className="centered" defaultValue="Stop game and get reward"/>
+                  <button onClick={handleStopGame} className="button centered">Stop game and get reward</button>
                 </div>
               </div>
             </div>
@@ -119,13 +122,16 @@ function App() {
           </div>
           <div className="account only-after-login">
             <div>
-              <div id="near-account"></div>
               <div id="near-account-ref"></div>
-              <div id="near-action"></div>
             </div>
           </div>
         </div>
-        <div className="column" style={{minHeight: "600px"}}>
+        <div className="column">
+          <div style={{textAlign: "center"}}>
+            <input type="checkbox" id="near-game-double-move"/>
+            <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
+            jump</label>
+          </div>
           <div id="board">
             <div className="tiles"></div>
             <div className="pieces">
@@ -134,11 +140,6 @@ function App() {
               <div className="player2pieces">
               </div>
             </div>
-          </div>
-          <div style={{textAlign: "center"}}>
-            <input type="checkbox" id="near-game-double-move"/>
-            <label htmlFor="near-game-double-move" style={{color: "#eee"}}>Double 
-            jump</label>
           </div>
         </div>
 

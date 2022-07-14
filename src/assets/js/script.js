@@ -16,8 +16,8 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
   if(inverse_colors === undefined)
     inverse_cinverse_colorsolors = false;
 
-  console.log("current_player: " + current_player);
-  console.log("inverse_colors: " + inverse_colors);
+  // console.log("current_player: " + current_player);
+  // console.log("inverse_colors: " + inverse_colors);
 
   if (gameBoard === undefined) {
     gameBoard = [
@@ -87,7 +87,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
-      console.log("double_move: " + double_move);
+      // console.log("double_move: " + double_move);
       if (double_move) {
         if (move_buffer) {
           move_buffer = move_buffer + " " + c1(tile.position[1], current_player) + c2(tile.position[0], current_player)
@@ -96,7 +96,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
           move_buffer = current_move;
         }
         document.getElementById("near-game-double-move").checked = false;
-        console.log("move_buffer: " + move_buffer)
+        // console.log("move_buffer: " + move_buffer)
       }
       else{
         if (move_buffer) {
@@ -235,7 +235,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
     continuousjump: false,
     tilesElement: $('div.tiles'),
     //dictionary to convert position in Board.board to the viewport units
-    dictionary: ["0vmin", "10vmin", "20vmin", "30vmin", "40vmin", "50vmin", "60vmin", "70vmin", "80vmin", "90vmin"],
+    dictionary: ["0vmin", "12.5%", "25%", "37.5%", "50%", "62.5%", "75%", "87.5%"],
     //initialize the 8x8 board
     initalize: function () {
       var countPieces = 0;
@@ -262,7 +262,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
       //tiles_near = tiles_near.reverse();
     },
     tileRender: function (row, column, countTiles) {
-      this.tilesElement.append("<div class='tile' id='tile" + countTiles + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
+      this.tilesElement.append(`<div class='tile' id='tile${countTiles}' style='top: ${this.dictionary[row]}; left: ${this.dictionary[column]};'></div>`);
       tiles[countTiles] = new Tile($("#tile" + countTiles), [parseInt(row), parseInt(column)]);
       return countTiles + 1
     },
@@ -454,7 +454,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
     if (bidNEAR >= 0.01) {
       let referrer_id = get_referral();
       await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
-        console.log(resp);
+        // console.log(resp);
         //load();
       });
     } if (bidCheddar >= 1) {
@@ -474,7 +474,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors){
   });
   $('#near-make-unavailable').on("click", async function () {
       await window.contract.make_unavailable().then(resp => {
-        console.log(resp);
+        // console.log(resp);
         //load();
       });
   });

@@ -1,22 +1,24 @@
 const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
+export const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
+// export const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
-    // networkId: 'mainnet',
-    // nodeUrl: 'https://rpc.mainnet.near.org',
-    // contractName: "app.checkers.near",
-    // walletUrl: 'https://wallet.near.org',
-    // helperUrl: 'https://helper.mainnet.near.org',
-    // explorerUrl: 'https://explorer.mainnet.near.org',
+    networkId: 'mainnet',
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    contractName: "checkers.cheddar.near",
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',
 
     
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-    contractName: "checkers.cheddar.testnet",
-    walletUrl: 'https://wallet.testnet.near.org',
-    helperUrl: 'https://helper.testnet.near.org',
-    explorerUrl: 'https://explorer.testnet.near.org',
+    // networkId: 'testnet',
+    // nodeUrl: 'https://rpc.testnet.near.org',
+    // contractName: "checkers.cheddar.testnet",
+    // walletUrl: 'https://wallet.testnet.near.org',
+    // helperUrl: 'https://helper.testnet.near.org',
+    // explorerUrl: 'https://explorer.testnet.near.org',
     
 };
 
@@ -32,8 +34,8 @@ async function load() {
         clearInterval(loadGamesInterval);
     if (loadGameInterval)
         clearInterval(loadGameInterval);
-    console.log("loadGameInterval")
-    console.log(loadGameInterval)
+    // console.log("loadGameInterval")
+    // console.log(loadGameInterval)
 
     loadAvailableGames().then(async (my_games) => {
         update_game_ui(my_games);
@@ -70,9 +72,10 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
+    console.log(my_games)
     if (my_games.length) {
-        console.log("Current game found!");
-        console.log(my_games);
+        // console.log("Current game found!");
+        // console.log(my_games);
 
         $('#near-game').removeClass('hidden');
         current_game_id = my_games[0][0];
@@ -82,6 +85,7 @@ function update_game_ui(my_games) {
         $('#near-make-available-block').addClass('hidden');
         $('#near-make-unavailable-block').addClass('hidden');
     } else {
+        // ESTO ES LO QUE COMENTE $("#near-make-unavailable").addClass("hidden")
         $('#near-waiting-list').removeClass('hidden');
         $('#near-available-players').removeClass('hidden');
     }
@@ -115,18 +119,17 @@ async function stop_game() {
 
 }
 
-async function load_game() {
+async function load_game(force_reload = false) {
     if (current_game_id >= 0) {
-        pieces = [];
+        // pieces = [];
         tiles = [];
-        console.log("current_game_id: " + current_game_id);
+        // console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
                 return;
-
-            force_reload = false;
-
-            console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
+            
+            
+            // console.log("Current player: " + getPlayerByIndex(game, game.current_player_index));
             let is_turn_availabe = getPlayerByIndex(game, game.current_player_index) === window.accountId;
 
             if (game.turns > -1) {
@@ -141,13 +144,12 @@ async function load_game() {
                     $('#near-player-2-stop-game').removeClass('hidden');
                 }
             }
-
             window.player1 = game.player_1;
             window.player2 = game.player_2;
             await loadPlayerNFT();
-
+            
             if (!force_reload && is_turn_availabe && last_updated_turn === game.turns && game.winner_index === null) {
-                console.log("UI update skipped");
+                // console.log("UI update skipped");
                 return;
             }
 
@@ -155,7 +157,7 @@ async function load_game() {
 
             let selectedPiece = $('.selected').attr("id");
             $('.piece').remove();
-            console.log(game);
+            // console.log(game);
 
             document.getElementById('near-game-player-1').innerText = game.player_1;
             document.getElementById('near-game-player-2').innerText = game.player_2;
@@ -170,6 +172,10 @@ async function load_game() {
                 document.getElementById('near-game-reward').innerText = nearApi.utils.format.formatNearAmount(game.reward.balance, 2);
                 $('#near-game-give-up').addClass('hidden');
                 $('#near-game-turn').addClass('hidden');
+                $('#near-available-players').removeClass('hidden')
+                $('#near-waiting-list').removeClass('hidden')
+                $('#near-make-available-block').removeClass('hidden')
+                $('#near-game-turn-block').addClass('hidden')
             } else{
                 $('#near-game-finished').addClass('hidden');
                 $('#near-game-give-up').removeClass('hidden');
@@ -204,20 +210,21 @@ async function load_game() {
 
 
             let board = game.board;
-
             if (game.player_1 === window.accountId) {
                 board = board.reverse();
                 //board = reverseArray(board);
                 //board = reversePlayers(board);
             } else if (game.player_2 === window.accountId) {
                 board = reverseArray(board);
-                board = reversePlayers(board);
+                // board = reversePlayers(board);
             }
 
             let inverse_colors = (game.player_2 === window.accountId);
-
-            inizialise_game(board, [2, 1][parseInt(game.current_player_index)], inverse_colors); // 0 -> 2, 1 -> 1
-
+            inverse_colors = false
+            pieces = []
+            console.log("Reinitializing 1")
+            inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
+            
             if (selectedPiece && is_turn_availabe) {
                 $('#' + selectedPiece).addClass('selected');
             }
@@ -260,8 +267,9 @@ function fromatTimestamp(total_seconds) {
 }
 
 async function make_move(line) {
+    console.log("Move: ", line)
     if (current_game_id >= 0) {
-        console.log("make_move: " + line);
+        // console.log("make_move: " + line);
         await window.contract.make_move({game_id: current_game_id, line}, GAS_MOVE).then(async resp => {
             force_reload = true;
             await load_game();
@@ -275,8 +283,7 @@ async function make_move(line) {
             } else {
                 alert(e);
             }
-
-            await load_game();
+            await load_game(true);
         });
     }
 }
@@ -284,23 +291,23 @@ async function make_move(line) {
 async function give_up() {
     if (current_game_id >= 0) {
         await window.contract.give_up({game_id: current_game_id}, GAS_GIVE_UP, 1).then(async resp => {
-            console.log(resp);
+            // console.log(resp);
             await load_game();
         })
     }
 }
 
 async function loadAvailableGames() {
-    console.log("get_available_games");
+    // console.log("get_available_games");
     return await window.contract.get_available_games({from_index: 0, limit: 50}).then(games => {
-        console.log(games)
+        // console.log(games)
         let mygames = games.filter(game => (game[1][0] === window.accountId || game[1][1] === window.accountId));
         return mygames;
     });
 }
 
 async function loadPlayers() {
-    console.log("get_available_players");
+    // console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
         $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
         console.log(players)
@@ -320,7 +327,7 @@ async function loadPlayers() {
             });
             $('#near-available-players-list').html('<ul>' + items.join() + '</ul>');
 
-            console.log("current_player_is_available " + current_player_is_available)
+            // console.log("current_player_is_available " + current_player_is_available)
             $('#near-make-available-block').toggleClass('hidden', current_player_is_available);
             $('#near-make-unavailable-block').toggleClass('hidden', !current_player_is_available);
         } else {
@@ -365,7 +372,7 @@ function login() {
     // user's behalf.
     // This works by creating a new access key for the user's account and storing
     // the private key in localStorage.
-    console.log("Here login");
+    // console.log("Here login");
     window.walletConnection.requestSignIn(nearConfig.contractName, "Near Checkers")
 }
 
@@ -386,6 +393,11 @@ function loadScript(src, callback) {
     };
     t = document.getElementsByTagName('script')[0];
     t.parentNode.insertBefore(s, t);
+}
+
+function copyInputValue(){
+    let copyInput = document.querySelector('.invitation-code').value;
+    navigator.clipboard.writeText(copyInput);
 }
 
 
@@ -419,19 +431,20 @@ function after() {
         await load();
 
         if (!window.accountId) {
-            $('#near-action-login').html('<input type="button" class="login-button" onclick="login()" value="Log In">');
+            $('#near-action-login').html('<input type="button" class="button login-button" onclick="login()" value="Log In">');
             $('.only-after-login').addClass('hidden');
             $('.only-before-login').removeClass('hidden');
 
         } else {
             $('#near-account').html("Logged in as " + window.accountId);
-            $('#near-action').html('<input type="button" onclick="logout()" value="Log Out">');
+            $('#near-action').html('<input type="button" onclick="logout()" class="button" value="Log Out">');
             $('.only-after-login').removeClass('hidden');
             $('.only-before-login').addClass('hidden');
 
-            $('#near-account-ref').html("<div>Invite a friend to get a 10% referral bonus:</div><div><input type='text' style='width: 280px' value='https://checkers.nearspace.info/?r=" + window.accountId + "'/></div>");
+            $('#near-account-ref').html("<div>Invite a friend to get a 10% referral bonus:</div><div class='invitation-input-line'><input class='invitation-code' type='text' value='https://checkers.nearspace.info/?r=" + window.accountId + `'/>'<svg onclick="copyInputValue()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'</div>`);
 
-            console.log("Logged in as " + window.accountId);
+
+            // console.log("Logged in as " + window.accountId);
         }
     })();
 
@@ -457,7 +470,7 @@ async function loadPlayerNFT() {
 }
 
 function loadPlayerCss(token_id, index) {
-    console.log("LOAD TOKEN: " + token_id);
+    // console.log("LOAD TOKEN: " + token_id);
     const cssId = 'nft-css-' + index;
     if (!document.getElementById(cssId)) {
         window.nft_tokens[index] = token_id;
@@ -523,7 +536,7 @@ function reversePlayers(arr) {
 function reverseArray(arr) {
     // https://www.geeksforgeeks.org/program-to-reverse-the-rows-in-a-2d-array/
     // Traverse each row of arr
-    for (i = 0; i < 8; i++) {
+    for (var i = 0; i < 8; i++) {
 
         // Initialise start and end index
         var start = 0;
@@ -606,7 +619,7 @@ async function ft_transfer(sender_id, amount, token_id) {
       });
 
       let connectedWalletAccount = window.walletConnection.account();
-      console.log("account : " + connectedWalletAccount.accountId);
+    //   console.log("account : " + connectedWalletAccount.accountId);
 
       let isAccountRegistered = (await connectedWalletAccount.viewFunction(token_id , "storage_balance_of", { account_id: accountId })) != null;
 
@@ -626,7 +639,7 @@ async function ft_transfer(sender_id, amount, token_id) {
           });
       }
 
-      console.log(transactions);
+    //   console.log(transactions);
 
     const currentTransactions = await Promise.all(
     transactions.map(function(t, i){
@@ -646,6 +659,6 @@ async function ft_transfer(sender_id, amount, token_id) {
       })
     );
     
-  console.log("trx",currentTransactions);  
+//   console.log("trx",currentTransactions);  
   window.walletConnection.requestSignTransactions(currentTransactions);
 }
