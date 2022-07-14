@@ -460,7 +460,7 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
         load();
       });
 
-      // await window.contract.make_available_ft({sender_id: window.accountId, amount: 1, token_id: "token-v2.cheddar.testnet"}, GAS_MAKE_AVAILABLE).then(resp => {
+      // await window.contract.make_available_ft({sender_id: window.accountId, amount: bidCheddar, token_id: "token-v3.cheddar.testnet"}, GAS_MAKE_AVAILABLE).then(resp => {
       //   console.log(resp);
       //   load();
       // });
@@ -468,12 +468,34 @@ function inizialise_game(gameBoard, current_player, inverse_colors){
       alert("Bid should be > 0.01 NEAR or > 1 Cheddar")
     }
   });
-  $('#near-make-unavailable').on("click", async function () {
-      await window.contract.make_unavailable().then(resp => {
-        console.log(resp);
-        load();
+$('#near-make-unavailable').on("click", async function () {
+
+      let player = null
+
+      await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
+
+        player = players.filter(function (el) {
+          return el[0] == window.accountId
+        });
+
       });
-  });
+
+      if (player[0][1].token_id === "token-v3.cheddar.testnet") {
+            await window.contract.make_unavailable({}, GAS_MAKE_AVAILABLE, 1).then(async resp => {
+                 console.log(resp);
+                 load();
+            });
+      }
+      else {
+           await window.contract.make_unavailable().then(resp => {
+              console.log(resp);
+              load();
+            });
+      }
+
+
+
+  }); 
 
   updateAllPlayersNft();
 }

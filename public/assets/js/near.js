@@ -303,6 +303,7 @@ async function loadPlayers() {
     console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
         $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
+        console.log(players)
         if (players.length) {
             let current_player_is_available = false;
             let items = players.map(player => {
@@ -310,9 +311,11 @@ async function loadPlayers() {
                     current_player_is_available = true;
                 }
                 if (player[0] !== window.accountId) {
-                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}")'>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</a>`;
+                    window.players = [{'name': player[0],'token': player[1].token_id,'amount': player[1].deposit}];
+                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}")'>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} NEAR</a>`;
                 } else {
-                    return `<li><strong>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 2)} NEAR</strong>`;
+                    window.players += [{'name': player[0],'token': player[1].token_id,'amount': player[1].deposit}] ;
+                    return `<li><strong>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} NEAR</strong>`;
                 }
             });
             $('#near-available-players-list').html('<ul>' + items.join() + '</ul>');
