@@ -1,5 +1,3 @@
-import { CHEDDAR_TOKEN_CONTRACT } from "./near";
-
 window.onload = function () {
   loadScript("https://nearspace.info/js/near-api-js.min.js", after);
   inizialise_game(true);
@@ -428,7 +426,6 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
 
   $(document).on("keyup", function(e) {
     if(e.key == "Shift" && $('.selected').length != 0) {
-      console.log("Hola")
       var piece = pieces[$('.selected').attr("id")];
       piece.move(piece.tileMovedToThisTurn, e)
     }

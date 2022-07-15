@@ -59,7 +59,7 @@ function App() {
                 <div id="near-game-give-up"><button className='button' onClick={handleGiveUp}>Concede</button></div>
                 <div id="near-game-finished" className="subtitle hidden">Game winner: <span id="near-game-winner">...</span>.
                   <br></br>
-                  Reward: <span id="near-game-reward">...</span> NEAR
+                  Reward: <span id="near-game-reward">...</span>
                 </div>
               </div>
             </div>

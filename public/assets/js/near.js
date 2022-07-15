@@ -1,24 +1,24 @@
 const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
-export const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
-// export const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
+// const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
+const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
-    networkId: 'mainnet',
-    nodeUrl: 'https://rpc.mainnet.near.org',
-    contractName: "checkers.cheddar.near",
-    walletUrl: 'https://wallet.near.org',
-    helperUrl: 'https://helper.mainnet.near.org',
-    explorerUrl: 'https://explorer.mainnet.near.org',
+    // networkId: 'mainnet',
+    // nodeUrl: 'https://rpc.mainnet.near.org',
+    // contractName: "checkers.cheddar.near",
+    // walletUrl: 'https://wallet.near.org',
+    // helperUrl: 'https://helper.mainnet.near.org',
+    // explorerUrl: 'https://explorer.mainnet.near.org',
 
     
-    // networkId: 'testnet',
-    // nodeUrl: 'https://rpc.testnet.near.org',
-    // contractName: "checkers.cheddar.testnet",
-    // walletUrl: 'https://wallet.testnet.near.org',
-    // helperUrl: 'https://helper.testnet.near.org',
-    // explorerUrl: 'https://explorer.testnet.near.org',
+    networkId: 'testnet',
+    nodeUrl: 'https://rpc.testnet.near.org',
+    contractName: "checkers.cheddar.testnet",
+    walletUrl: 'https://wallet.testnet.near.org',
+    helperUrl: 'https://helper.testnet.near.org',
+    explorerUrl: 'https://explorer.testnet.near.org',
     
 };
 
@@ -163,13 +163,14 @@ async function load_game(force_reload = false) {
             document.getElementById('near-game-player-2').innerText = game.player_2;
             document.getElementById('near-game-turn').innerText = game.turns;
             let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
-            document.getElementById('near-player-1-deposit').innerText = "Deposit: " + half_reward + " NEAR";
+            let rewardToken = game.reward.token_id == "NEAR" ? "NEAR" : "CHEDDAR"
+            document.getElementById('near-player-1-deposit').innerText = `Deposit: ${half_reward} ${rewardToken}`;
             document.getElementById('near-player-2-deposit').innerText = document.getElementById('near-player-1-deposit').innerText;
 
             if (game.winner_index !== null) {
                 $('#near-game-finished').removeClass('hidden');
                 document.getElementById('near-game-winner').innerText = getPlayerByIndex(game, game.winner_index);
-                document.getElementById('near-game-reward').innerText = nearApi.utils.format.formatNearAmount(game.reward.balance, 2);
+                document.getElementById('near-game-reward').innerText = `${nearApi.utils.format.formatNearAmount(game.reward.balance, 2)} ${rewardToken}` ;
                 $('#near-game-give-up').addClass('hidden');
                 $('#near-game-turn').addClass('hidden');
                 $('#near-available-players').removeClass('hidden')
@@ -314,15 +315,15 @@ async function loadPlayers() {
         if (players.length) {
             let current_player_is_available = false;
             let items = players.map(player => {
+                const token_id = player[1].token_id
+                const displayableTokenName = token_id == "NEAR" ? token_id : "CHEDDAR"
                 if (!current_player_is_available && player[0] == window.accountId) {
                     current_player_is_available = true;
                 }
                 if (player[0] !== window.accountId) {
-                    window.players = [{'name': player[0],'token': player[1].token_id,'amount': player[1].deposit}];
-                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}")'>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} NEAR</a>`;
+                    return `<li><a href="#" onclick='select("${player[0]}", "${player[1].deposit}", "${token_id}")'>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} ${displayableTokenName}</a>`;
                 } else {
-                    window.players += [{'name': player[0],'token': player[1].token_id,'amount': player[1].deposit}] ;
-                    return `<li><strong>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} NEAR</strong>`;
+                    return `<li><strong>${player[0]}, bid: ${window.nearApi.utils.format.formatNearAmount(player[1].deposit, 24)} ${displayableTokenName}</strong>`;
                 }
             });
             $('#near-available-players-list').html('<ul>' + items.join() + '</ul>');
@@ -353,12 +354,20 @@ function get_referral() {
     }
 }
 
-async function select(player, deposit) {
+async function select(player, deposit, tokenId) {
     let referrer_id = get_referral();
-    await window.contract.start_game({
-        opponent_id: player,
-        referrer_id
-    }, GAS_START_GAME, deposit).then(resp => console.log(resp));
+    if(tokenId == "NEAR") {
+        await window.contract.start_game({
+            opponent_id: player,
+            referrer_id
+        }, GAS_START_GAME, deposit).then(resp => console.log(resp));
+    } else {
+        await window.contract.start_game({
+            opponent_id: player,
+            referrer_id
+        }, GAS_START_GAME, "0").then(resp => console.log(resp));
+    }
+    
 }
 
 function logout() {
@@ -609,10 +618,10 @@ async function ft_transfer(sender_id, amount, token_id) {
             methodName: 'ft_transfer_call',
             args: {
               receiver_id: nearConfig.contractName,
-              amount: amount,
-              msg: "transfer ft"
+              amount: window.nearApi.utils.format.parseNearAmount(amount.toString()),
+              msg: ""
             },
-            amount: new window.nearApi.utils.format.parseNearAmount('0.000000000000000000000001'),
+            amount: window.nearApi.utils.format.parseNearAmount('0.000000000000000000000001'),
             gas: '75000000000000'
           }
         ]
