@@ -9,6 +9,7 @@
     "buffer": "^6.0.3",
     "jquery": "^3.6.0",
     "near-api-js": "^0.44.2",
+    "near-cli": "^3.4.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "3.4.1",

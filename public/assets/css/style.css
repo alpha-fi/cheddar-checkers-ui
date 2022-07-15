@@ -1,5 +1,12 @@
+html {
+  background-image: url("../img/cheddar-background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: saddlebrown;
+}
+
 html, body {
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   height: 100%;
@@ -7,9 +14,8 @@ html, body {
   margin: 0;
   padding: 0;
   color: #333333;
-  font-family: "Lato", Calibri, sans-serif;
-  font-size: 16px;
-  background-color: #3A3042; }
+  font-family: 'Bubblegum Sans', cursive !important;
+  font-size: 16px;}
   html h1, body h1 {
     margin-top: 10px; }
   html h2, body h2 {
@@ -38,6 +44,161 @@ div.column {
   margin: 10px;
 }
 
+.double-jump-button-container {
+  background-color: #F1F1FF;
+  width: max-content;
+  margin: 5px auto;
+  padding: 5px;
+  border-radius: 12px;
+
+}
+
+header {
+  display    : flex;
+  flex-flow  : row;
+  align-items: center;
+  margin     : 15px 15px 0px 15px;
+}
+
+header nav {
+  flex           : 1 1 30%;
+  display        : flex;
+  flex-flow      : row wrap;
+  justify-content: flex-end;
+  align-items    : center;
+  
+  z-index: 19;
+}
+
+header nav a {
+  flex         : 0 1 auto;
+}
+
+#logo:focus {
+  outline-style: none;
+  outline-color: (--primary);
+  box-shadow   : none;
+  outline-width: 0px;
+}
+
+#links a, #coinFlip {
+  font-family: Bubblegum Sans !important;
+  font-weight: bold;
+  font-size:  14px;
+  margin: 5px;
+  white-space: nowrap;
+}
+
+#coinFlip img {
+  position: relative;
+  top: 5px;
+  height: 19px;
+  aspect-ratio: 1;
+}
+
+.btn {
+  border: 2px solid gold;
+  padding: 8px 10px;
+  height: 32px;
+  background: white;
+  border-radius: 16px;
+  /* margin: 8px 16px 8px 0; */
+  line-height: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+}
+
+.btn:disabled {
+    border-color: #ccc !important;;
+    background: white !important;
+    color: #ccc !important;
+}
+
+.btn:focus {
+    outline: none;
+}
+
+.btn:hover {
+    background: gold;
+}
+
+.btn:active {
+    color: white;
+    background: #0072CE;
+}
+
+.btn-outline-none {
+  border: none;
+  line-height: 32px;
+}
+
+.btn-outline-none svg {
+  top: 7px;
+  position: relative;
+}
+
+.cheddar-main-logo-container {
+  display: none;
+}
+
+@media screen and (max-width: 960px) {
+    .cheddar-main-logo-container {
+    display: block;
+  }
+
+  a.selected {
+    color: black;
+    background-color: var(--second-yellow);
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  #logo img {
+    width:  95%;
+  }
+
+  #links {
+    margin-left: 1rem;
+  }
+
+  header div.title {
+    margin-left: 2px;
+  }
+
+  header nav a {
+    font-size     : 11px;
+    padding-bottom: 3px;
+  }
+}
+
+#circulatingSupply {
+  display    : flex;
+  flex-flow  : row;
+  align-items: center;
+  margin     : 5px 15px 15px 15px;
+}
+
+#circulatingSupply span {
+  font-family: Bubblegum Sans !important;
+  font-weight: bold;
+  font-size:  13px;
+  margin:  0 0.2rem 0 0.2rem;
+}
+
+#circulatingSupply a{
+  color:  #222;
+  margin: 0 0 0 0.1rem;
+  width:  1.5em;
+}
+
+#circulatingSupply a:focus {
+  outline-style: none;
+  outline-color: (--primary);
+  box-shadow   : none;
+  outline-width: 0px;
+}
+
 .game-container {
   position: relative;
   display: flex;
@@ -59,7 +220,38 @@ div.column {
   }
 }
 
-div.info, div.stats, div.account, div.rules {
+#rules-layer {
+  position: fixed;
+  top: 0;
+  background-color: #33333398;
+  z-index: 1;
+  width: 100vw;
+  height: 100%;
+}
+
+#rules-layer svg {
+  position: absolute;
+  right: 6%;
+  top: 5%;
+  z-index: 3;
+  background-color: lightgrey;
+  padding: 5px;
+  border-radius: 8px;
+}
+
+#near-game-rules {
+  position: absolute;
+  z-index: 2;
+  left: 15vw;
+  right: 15vw;
+  top: 10vh;
+  background-color: #F1F1FF;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 1px 1px 3px #232621;
+}
+
+div.info, div.stats, div.account {
   width: 70%;
   margin: 5vmin auto 0;
   box-sizing: border-box;
@@ -68,10 +260,6 @@ div.info, div.stats, div.account, div.rules {
   color: #3A3042;
   border-radius: 3px;
   box-shadow: 1px 1px 3px #232621; }
-
-div.rules{
-  margin-top: 50px;
-}
 
 div.account{
   margin-top: 50px;
@@ -153,18 +341,19 @@ div.stats {
       background-color: #0c5a6b; }
 
 .button {
-  display: block;
-  border: 0;
-  color: #F1F1FF;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #074998;
-  box-shadow: 1px 1px 3px #232621;
-  transition: background-color 0.15s linear; }
+  background: #8542eb;
+  border-radius: 16px;
+  box-shadow: inset 0 -1px 0 0 rgb(14 14 44 / 40%);
+  color: hsla(0,0%,100%,.89);
+  font-size: 16px;
+  font-weight: 400;
+  margin: 5px 7px;
+  padding: 0.5rem 1rem;
+  font-family: 'Bubblegum Sans', cursive;
+  cursor: pointer; }
 .button:hover {
-  background-color: #0c5a6b; }
+  background-color: #9d67ef;
+  font-weight: 700; }
 
 .button.centered {
   margin: 20px auto 10px
