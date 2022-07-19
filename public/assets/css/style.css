@@ -99,6 +99,7 @@ header nav a {
 @media screen and (max-width: 600px) {
   header {    
     overflow: hidden;
+    justify-content: space-between;
   }
 
   #burguer-button {
@@ -508,7 +509,7 @@ div.stats {
 
 div#board {
   position: relative;
-  width: 100%;
+  width: 98%;
   aspect-ratio: 1;
   border-radius: 5px;
   box-shadow: 1px 1px 3px #232621;
