@@ -1,3 +1,11 @@
+.hidden {
+  display: none !important;
+}
+
+.flipped {
+  transform: rotate(180deg);
+}
+
 html {
   background-image: url("../img/cheddar-background.png");
   background-size: cover;
@@ -74,14 +82,98 @@ header nav a {
   flex         : 0 1 auto;
 }
 
-#logo:focus {
+#cheddar-mark {
+  line-height: 34px;
+}
+
+#burguer-button {
+  display: none;
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.705);
+  width: max-content;
+  border-radius: 8px;
+  margin: 5px;
+  z-index: 6;
+}
+
+@media screen and (max-width: 600px) {
+  header {    
+    overflow: hidden;
+  }
+
+  #burguer-button {
+    display: flex;
+  }
+
+  .logo-in-mobile {
+    display: block !important;
+  }
+
+  .only-hide-on-mobile {
+    transform: translateX(100%) !important;
+  }
+  
+  #links {
+    position: fixed;
+    top: 0;
+
+    z-index: 5;
+
+    height: 100vh;
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    background-color: white;
+
+    transition: all ease-in-out 0.3s;
+    transform: translateX(0%);
+  }
+
+  .general-links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #swap-icon {
+    top: 7px !important;
+    padding: 0 !important;
+  }
+
+  .games-dropdown {
+    border: 1px solid black !important;
+  }
+
+  .games-links-container {
+    border: 1px solid black;
+  }
+  
+  .games-dropdown-items {
+    right: auto;
+    left: 5px;
+  }
+}
+
+.logo:focus {
   outline-style: none;
   outline-color: (--primary);
   box-shadow   : none;
   outline-width: 0px;
 }
 
-#links a, #coinFlip {
+.logo-in-mobile {
+  display: none;
+  width: 60vw;
+  margin-top: 24px !important;
+}
+
+#links {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#links a, #coinFlip, #farm {
   font-family: Bubblegum Sans !important;
   font-weight: bold;
   font-size:  14px;
@@ -89,11 +181,65 @@ header nav a {
   white-space: nowrap;
 }
 
-#coinFlip img {
+#swap-icon {
+  border: solid 4px #6495ed70;
+  border-radius: 100%;
+  background-color: #6495ed70;
+  top: 10px;
+  margin-left: 5px;
+  padding: 3px;
+}
+
+#coinFlip img, #farm img {
   position: relative;
   top: 5px;
   height: 19px;
   aspect-ratio: 1;
+}
+
+.games-dropdown {
+  text-align: center;
+  width: max-content;
+  margin: 5px;
+}
+
+.games-dropdown svg {
+  top: 5px !important;
+  transition: all 0.3s linear;
+}
+
+.game-links {
+  position: relative;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.games-dropdown-items {
+  position: absolute;
+  z-index: 3;
+  top: 57px;
+  right: 5px;
+  overflow: hidden;
+  height: max-content;
+  width: max-content;
+}
+
+.games-dropdown-hidden-position {
+  transform: translateY(-100%) !important;
+}
+
+.games-links-container {
+  transform: translateY(0%);
+  transition: all 0.3s ease-out;
+  position: relative;
+  padding: 8px 0;
+  border-radius: 16px;
+  text-align: right;
+  width: max-content;
+  max-width: 80vw;
+  background-color: white;
 }
 
 .btn {
@@ -107,6 +253,7 @@ header nav a {
   cursor: pointer;
   text-decoration: none;
   color: black;
+  user-select: none;
 }
 
 .btn:disabled {
@@ -154,7 +301,7 @@ header nav a {
 }
 
 @media only screen and (max-width: 360px) {
-  #logo img {
+  .logo img {
     width:  95%;
   }
 
@@ -366,6 +513,7 @@ div#board {
   border-radius: 5px;
   box-shadow: 1px 1px 3px #232621;
   background-color: #B93848;
+  border: 5px solid rgba(255, 210, 98, 0.66); 
 }
 div#board .tiles {
   width: 100%;

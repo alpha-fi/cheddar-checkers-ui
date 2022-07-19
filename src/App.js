@@ -12,6 +12,16 @@ function App() {
       setRule(!isRule);
     }
   }
+  
+  const [moreGamesShown, setMoreGamesShown] = useState(false)
+  const moreGamesDropdownHandler = () => {
+    setMoreGamesShown(!moreGamesShown)
+  }
+
+  const [showBurguerMenu, setShowBurguerMenu] = useState(true)
+  const handlerBurgerMenu = () => {
+    setShowBurguerMenu(!showBurguerMenu)
+  }
 
   const handleGiveUp = () => {
     window.give_up(); 
@@ -24,16 +34,46 @@ function App() {
   return (
     <>
     <header>
-      <div><a href="#" id="logo"><img src="./assets/img/cheddar-logo.svg" width="175px;" /></a></div>
-      <div id="links">
-        <a className="btn btn-outline-none" href="https://draw.cheddar.farm" target="_blank">Draw 🎨</a>
-        <a className="btn btn-outline-none" href="https://nft.cheddar.farm/" target="_blank">
-          PowerUp NFT Sale 
-          <svg width="19" height="20" viewBox="0 0 19 23" xmlns="http://www.w3.org/2000/svg" fill="#F9BA37">
-            <path d="M15.6841 2.60303C16.2051 1.94403 15.7141 1.00003 14.8481 1.00003H8.13205C7.9502 0.9987 7.77107 1.04418 7.61187 1.1321C7.45268 1.22001 7.31878 1.34741 7.22305 1.50203L2.14105 9.95803C1.74005 10.624 2.24405 11.455 3.04905 11.455H6.47805L3.24805 19.52C2.78105 20.54 4.04305 21.473 4.89105 20.735L18.0001 8.33103H11.1511L15.6841 2.60303V2.60303Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </a>
-        <a href="https://vps179324.iceservers.net/" target="_blank" id="coinFlip" className="btn btn-outline-none">CoinFlip <img src="./assets/img/cheddar.svg" alt="coin flip icon"/></a>
+      <div id="cheddar-mark"><a href="#" className="logo"><img src="./assets/img/cheddar-logo.svg" width="175px;" /></a></div>
+      <div id='burguer-button' onClick={handlerBurgerMenu}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16">
+          <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+        </svg>
+      </div>
+
+      <div id="links" className={showBurguerMenu ? "only-hide-on-mobile" : ""}>
+        <div className='general-links'>
+          <a href="#" className="logo logo-in-mobile"><img src="./assets/img/cheddar-logo.svg" width="175px;" /></a>
+          <a className="btn btn-outline-none" href="https://nft.cheddar.farm/" target="_blank">
+            PowerUp 
+            <svg width="19" height="20" viewBox="0 0 19 23" xmlns="http://www.w3.org/2000/svg" fill="#F9BA37">
+              <path d="M15.6841 2.60303C16.2051 1.94403 15.7141 1.00003 14.8481 1.00003H8.13205C7.9502 0.9987 7.77107 1.04418 7.61187 1.1321C7.45268 1.22001 7.31878 1.34741 7.22305 1.50203L2.14105 9.95803C1.74005 10.624 2.24405 11.455 3.04905 11.455H6.47805L3.24805 19.52C2.78105 20.54 4.04305 21.473 4.89105 20.735L18.0001 8.33103H11.1511L15.6841 2.60303V2.60303Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          <a className="btn btn-outline-none" href="https://app.ref.finance/#token.cheddar.near|token.v2.ref-finance.near" target="_blank">
+            Ref Swap
+            <svg id="swap-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-arrow-left-right" viewBox="0 0 16 16">
+              <path fillRule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+            </svg> 
+          </a>
+        </div>
+
+        <div className="game-links">
+          <p className='games-dropdown btn btn-outline-none' onClick={moreGamesDropdownHandler}>
+            More games
+            <svg onClick={moreGamesDropdownHandler} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className={moreGamesShown? "bi bi-caret-down-fill flipped" : "bi bi-caret-down-fill"} viewBox="0 0 16 16">
+              <path onClick={moreGamesDropdownHandler} d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+            </svg>
+          </p>
+          <div className='games-dropdown-items'>
+            <div className={moreGamesShown ? 'games-links-container' : 'games-links-container games-dropdown-hidden-position'}>
+              <a className="btn btn-outline-none" href="https://draw.cheddar.farm" target="_blank">Draw 🎨</a>
+              <a href="https://vps179324.iceservers.net/" target="_blank" id="coinFlip" className="btn btn-outline-none">CoinFlip <img src="./assets/img/cheddar.svg" alt="coin flip icon"/></a>
+              <a href="https://app.cheddar.farm/" target="_blank" id="farm" className="btn btn-outline-none">Farm <img src="./assets/img/farmer-svgrepo-com.svg" alt="farmer icon"/></a>
+            </div>
+          </div>
+          
+        </div>
       </div>
     </header>
 
