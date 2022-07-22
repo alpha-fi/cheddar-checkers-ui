@@ -1,24 +1,24 @@
 const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
-// const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
-const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
+const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
+// const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
 const nearConfig = {
-    // networkId: 'mainnet',
-    // nodeUrl: 'https://rpc.mainnet.near.org',
-    // contractName: "checkers.cheddar.near",
-    // walletUrl: 'https://wallet.near.org',
-    // helperUrl: 'https://helper.mainnet.near.org',
-    // explorerUrl: 'https://explorer.mainnet.near.org',
+    networkId: 'mainnet',
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    contractName: "checkers.cheddar.near",
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',
 
     
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-    contractName: "checkers.cheddar.testnet",
-    walletUrl: 'https://wallet.testnet.near.org',
-    helperUrl: 'https://helper.testnet.near.org',
-    explorerUrl: 'https://explorer.testnet.near.org',
+    // networkId: 'testnet',
+    // nodeUrl: 'https://rpc.testnet.near.org',
+    // contractName: "checkers.cheddar.testnet",
+    // walletUrl: 'https://wallet.testnet.near.org',
+    // helperUrl: 'https://helper.testnet.near.org',
+    // explorerUrl: 'https://explorer.testnet.near.org',
     
 };
 
@@ -355,20 +355,142 @@ function get_referral() {
 }
 
 async function select(player, deposit, tokenId) {
-    let referrer_id = get_referral();
-    if(tokenId == "NEAR") {
-        await window.contract.start_game({
-            opponent_id: player,
-            referrer_id
-        }, GAS_START_GAME, deposit).then(resp => console.log(resp));
-    } else {
-        await window.contract.start_game({
-            opponent_id: player,
-            referrer_id
-        }, GAS_START_GAME, "0").then(resp => console.log(resp));
-    }
     
+    let referrer_id = get_referral();
+    const transactions = [];
+
+    transactions.unshift({
+        receiverId: nearConfig.contractName,
+        functionCalls: [
+          {
+            methodName: 'start_game',
+            args: {
+                opponent_id: player,
+                referrer_id
+            },
+            amount: "0",
+            gas: '75000000000000'
+          }
+        ]
+    });
+
+    if(tokenId == "NEAR") {
+        const GAS_MAKE_AVAILABLE = "290000000000000";
+        transactions.unshift({
+            receiverId: nearConfig.contractName,
+            functionCalls: [
+                {
+                    methodName: 'make_available',
+                    args: {
+                        config: {
+                            first_move: "Random"
+                        }, 
+                        referrer_id
+                    },
+                    amount: deposit.toString(),
+                    gas: GAS_MAKE_AVAILABLE
+                }
+            ]
+        });
+        
+    } else {
+        transactions.unshift({
+            receiverId: tokenId,
+            functionCalls: [
+            {
+                methodName: 'ft_transfer_call',
+                args: {
+                receiver_id: nearConfig.contractName,
+                amount: deposit.toString(),
+                msg: ""
+                },
+                amount: "1",
+                gas: '75000000000000'
+            }
+            ]
+        });
+
+        let connectedWalletAccount = window.walletConnection.account();
+    //   console.log("account : " + connectedWalletAccount.accountId);
+
+        let isAccountRegistered = (await connectedWalletAccount.viewFunction(tokenId , "storage_balance_of", { account_id: accountId })) != null;
+
+        if(!isAccountRegistered) {
+            transactions.unshift({
+                receiverId: tokenId,
+                functionCalls: [
+                {
+                    methodName: 'storage_deposit',
+                    args: {
+                    account_id: sender_id
+                    },
+                    amount: window.nearApi.utils.format.parseNearAmount('0.2'),
+                    gas: '100000000000000'
+                }
+                ]
+            });
+        }
+    }
+
+    const isWaiting = await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
+        let isCurrentPlayerWaiting = false
+        if(players.length) {
+            isCurrentPlayerWaiting = players.reduce((prev, curr) => prev || curr[0] == window.accountId, false)
+        }
+        return isCurrentPlayerWaiting
+    })
+    if(isWaiting) {
+        transactions.unshift({
+            receiverId: nearConfig.contractName,
+            functionCalls: [
+            {
+                methodName: 'make_unavailable',
+                args: {},
+                amount: tokenId == "NEAR" ? "0" : "1",
+                gas: '100000000000000'
+            }
+            ]
+        });
+    }
+
+    const currentTransactions = await Promise.all(
+        transactions.map(function(t, i){
+            return setupTransaction({
+                receiverId: t.receiverId,
+                nonceOffset: i + 1,
+                actions: t.functionCalls.map(function(fc, j){
+                        return window.nearApi.transactions.functionCall(
+                            fc.methodName,
+                            fc.args,
+                            fc.gas,
+                            fc.amount
+                        );
+                    }
+                )
+            });
+        })
+    );
+        
+    console.log("trx",currentTransactions);  
+    window.walletConnection.requestSignTransactions(currentTransactions);
+        
 }
+
+// async function select(player, deposit, tokenId) {
+//     let referrer_id = get_referral();
+//     if(tokenId == "NEAR") {
+//         await window.contract.start_game({
+//             opponent_id: player,
+//             referrer_id
+//         }, GAS_START_GAME, "0").then(resp => console.log(resp));
+//     } else {
+//         await window.contract.start_game({
+//             opponent_id: player,
+//             referrer_id
+//         }, GAS_START_GAME, "0").then(resp => console.log(resp));
+//     }
+    
+// }
 
 function logout() {
     window.walletConnection.signOut()
@@ -443,7 +565,7 @@ function after() {
             $('#near-action-login').html('<input type="button" class="button login-button" onclick="login()" value="Log In">');
             $('.only-after-login').addClass('hidden');
             $('.only-before-login').removeClass('hidden');
-            
+
         } else {
             $('#near-account').html(window.accountId);
             $('#near-action').html('<input type="button" onclick="logout()" class="button" value="Log Out">');

@@ -104,8 +104,19 @@ header nav a {
     justify-content: space-between;
   }
 
+  .nav-bar {
+    width: auto !important;
+  }
+
+  .show-in-big-screen {
+    display: none !important;
+  }
+
   .games-links-container {
+    display: flex !important;
     max-width: 30vw !important;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .games-links-container .btn {
@@ -137,10 +148,10 @@ header nav a {
     background-color: white;
 
     transition: all ease-in-out 0.3s;
-    transform: translateX(0%);
+    transform: translateX(-73%);
   }
 
-  .general-links, .nav-bar-right-part {
+  .general-links {
     display: flex;
     flex-direction: column;
     align-items: flex-start !important;
@@ -163,6 +174,23 @@ header nav a {
     right: auto;
     left: 5px;
   }
+
+  .logo-in-mobile {
+    order: 1;
+  }
+
+  .user-section {
+    order: 2 !important;
+  }
+
+  .general-links {
+    order: 3 !important;
+  }
+
+  .game-links {
+    order: 4 !important;
+    top: 5px;
+  }
 }
 
 .logo:focus {
@@ -180,7 +208,6 @@ header nav a {
 
 #links {
   display: flex;
-  width: 100%;
   justify-content: flex-end;
   align-items: center;
 }
@@ -193,15 +220,7 @@ header nav a {
   align-items: center;
 }
 
-.nav-bar-right-part {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-#links a, #coinFlip, #farm {
+#links a, .coinFlip, .farm {
   font-family: Bubblegum Sans !important;
   font-weight: bold;
   font-size:  14px;
@@ -209,7 +228,7 @@ header nav a {
   white-space: nowrap;
 }
 
-#VRFarm svg {
+.VRFarm svg {
   top: 4px;
 }
 
@@ -222,7 +241,11 @@ header nav a {
   padding: 3px;
 }
 
-#coinFlip img, #farm img {
+.draw, .VRFarm {
+  width: 68px;
+}
+
+.coinFlip img, .farm img, .VRFarm svg {
   position: relative;
   top: 5px;
   height: 19px;
@@ -246,6 +269,12 @@ header nav a {
   top: 9px !important;
 }
 
+.show-in-big-screen {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
 .game-links, .user-section {
   position: relative;
   display: flex;
@@ -254,8 +283,18 @@ header nav a {
   margin: 5px;
 }
 
+.game-links {
+  order: 1;
+}
+
+.general-links {
+  order: 2;
+  text-align: right;
+}
+
 .user-section {
   top: 10px;
+  order: 3;
 }
 
 .droped-down {
@@ -291,6 +330,10 @@ header nav a {
 
 .user-dropdown div {
   display: inline-block;
+}
+
+.games-links-container {
+  display: none;
 }
 
 .games-links-container, .user-container {
@@ -416,7 +459,6 @@ header nav a {
 .game-container {
   position: relative;
   display: flex;
-  width: 100vw;
   align-items: flex-start;
   justify-content: center;
   align-content: center;
@@ -575,12 +617,14 @@ div.stats {
 
 div#board {
   position: relative;
-  width: 98%;
+  max-width: 98%;
+  max-height: 80vh;
   aspect-ratio: 1;
   border-radius: 5px;
   box-shadow: 1px 1px 3px #232621;
   background-color: #B93848;
-  border: 5px solid rgba(255, 210, 98, 0.66); 
+  border: 5px solid rgba(255, 210, 98, 0.66);
+  margin: 0 auto;
 }
 div#board .tiles {
   width: 100%;
