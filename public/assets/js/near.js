@@ -123,6 +123,7 @@ async function load_game(force_reload = false) {
     if (current_game_id >= 0) {
         // pieces = [];
         tiles = [];
+        console.log("window.contract", window.contract)
         // console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
