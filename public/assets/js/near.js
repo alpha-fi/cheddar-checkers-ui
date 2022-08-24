@@ -1,9 +1,11 @@
-const nft_contract = "nft.cheddar.testnet";
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
 // const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
+
+const nft_contract = "nft.cheddar.near";
+// const nft_contract = "nft.cheddar.testnet";
 const nearConfig = {
     networkId: 'mainnet',
     nodeUrl: 'https://rpc.mainnet.near.org',
@@ -72,7 +74,7 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
-    console.log(my_games)
+    // console.log(my_games)
     if (my_games.length) {
         // console.log("Current game found!");
         // console.log(my_games);
@@ -123,7 +125,7 @@ async function load_game(force_reload = false) {
     if (current_game_id >= 0) {
         // pieces = [];
         tiles = [];
-        console.log("window.contract", window.contract)
+        // console.log("window.contract", window.contract)
         // console.log("current_game_id: " + current_game_id);
         await window.contract.get_game({game_id: current_game_id}).then(async (game) => {
             if (!game)
@@ -224,7 +226,7 @@ async function load_game(force_reload = false) {
             let inverse_colors = (game.player_2 === window.accountId);
             inverse_colors = false
             pieces = []
-            console.log("Reinitializing 1")
+            // console.log("Reinitializing 1")
             inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
             
             if (selectedPiece && is_turn_availabe) {
@@ -312,7 +314,9 @@ async function loadPlayers() {
     // console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
         $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
-        console.log(players)
+
+        console.log("window", window)
+        console.log("window.contract", window.contract)
         if (players.length) {
             let current_player_is_available = false;
             let items = players.map(player => {
