@@ -78,11 +78,11 @@ function App() {
            </div>
 
 
-           <div className='user-section'>
-             <span className={!userInfoShown ? 'user-dropdown btn btn-outline-none' : "user-dropdown btn btn-outline-none droped-down"} onClick={userDropdownHandler}>
+           <div className='user-section'  onClick={userDropdownHandler}>
+             <span className={!userInfoShown ? 'user-dropdown' : "user-dropdown droped-down"} onClick={userDropdownHandler}>
                <img src='./assets/img/cheddar.svg' onClick={userDropdownHandler}/>              
                <div className='only-before-login'>
-                   <div id="near-action-login"></div>
+                   <p className='not-connected-text'>Not connected</p>
                </div>
                <div id="near-account" onClick={userDropdownHandler}></div>
                <svg onClick={userDropdownHandler} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className={userInfoShown? "bi bi-caret-down-fill flipped" : "bi bi-caret-down-fill"} viewBox="0 0 16 16">
@@ -93,6 +93,9 @@ function App() {
                <div className={userInfoShown ? 'user-container' : 'user-container user-dropdown-hidden-position'}>
                  <div className='only-after-login'>
                    <div id="near-action"></div>
+                 </div>
+                 <div className='only-before-login'>
+                   <div id="near-action-login"></div>
                  </div>
                </div>
              </div>
