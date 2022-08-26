@@ -227,7 +227,11 @@ async function load_game(force_reload = false) {
             inverse_colors = false
             pieces = []
             // console.log("Reinitializing 1")
-            inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
+            if (game.winner_index !== null){
+                inizialise_game()
+            } else {
+                inizialise_game(false, board, game.current_player_index + 1, inverse_colors); // 0 -> 2, 1 -> 1
+            }
             
             if (selectedPiece && is_turn_availabe) {
                 $('#' + selectedPiece).addClass('selected');
@@ -271,7 +275,7 @@ function fromatTimestamp(total_seconds) {
 }
 
 async function make_move(line) {
-    console.log("Move: ", line)
+    // console.log("Move: ", line)
     if (current_game_id >= 0) {
         // console.log("make_move: " + line);
         await window.contract.make_move({game_id: current_game_id, line}, GAS_MOVE).then(async resp => {
@@ -315,8 +319,8 @@ async function loadPlayers() {
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
         $('#near-available-players-hint').toggleClass('hidden', players.length == 0)
 
-        console.log("window", window)
-        console.log("window.contract", window.contract)
+        // console.log("window", window)
+        // console.log("window.contract", window.contract)
         if (players.length) {
             let current_player_is_available = false;
             let items = players.map(player => {

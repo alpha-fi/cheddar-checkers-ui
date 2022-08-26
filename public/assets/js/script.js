@@ -86,9 +86,9 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
           + c1(tile.position[1], current_player) + c2(tile.position[0], current_player);
 
       let double_move = document.getElementById('near-game-double-move').checked || (e !== undefined && e.shiftKey);
-      console.log(double_move)
+      // console.log(double_move)
       // console.log("double_move: " + double_move);
-      console.log("Move buffer", move_buffer)
+      // console.log("Move buffer", move_buffer)
       if (double_move) {
         this.movedWithCheckbox = document.getElementById('near-game-double-move').checked
         if (move_buffer) {
@@ -102,8 +102,8 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
       }
       else{
         this.element.removeClass('selected');
-        console.log(!this.movedWithCheckbox)
-        console.log(move_buffer != "")
+        // console.log(!this.movedWithCheckbox)
+        // console.log(move_buffer != "")
         if(!this.movedWithCheckbox && move_buffer != "") {
           make_move(move_buffer);
         } else if (move_buffer) {
