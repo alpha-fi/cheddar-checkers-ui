@@ -208,6 +208,9 @@ function App() {
                   <div>
                     Cheddar bid: <input type="text" id="cheddar-bid-deposit" defaultValue={0} style={{width: "30px"}}/> Cheddar
                   </div>
+                  <div>
+                    Neko bid: <input type="text" id="neko-bid-deposit" defaultValue={0} style={{width: "30px"}}/> Neko
+                  </div>
                   <button className='button' id="near-make-available">Join waiting list</button>
                 </div>
                 <div id="near-make-unavailable-block" className="hidden">
