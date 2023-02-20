@@ -1,5 +1,6 @@
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
+const NEKO_TOKEN_CONTRACT = "ftv2.nekotoken.near"
 // const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 

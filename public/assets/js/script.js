@@ -481,26 +481,23 @@ function inizialise_game(draw, gameBoard, current_player, inverse_colors){
   $('#near-make-available').on("click", async function () {
     let bidNEAR = parseFloat(document.getElementById("near-bid-deposit").value);
     let bidCheddar = parseFloat(document.getElementById("cheddar-bid-deposit").value);
+    let bidNeko = parseFloat(document.getElementById("neko-bid-deposit").value);
     if (bidNEAR >= 0.01) {
       let referrer_id = get_referral();
       await window.contract.make_available({config: {first_move: "Random"}, referrer_id}, GAS_MAKE_AVAILABLE, window.nearApi.utils.format.parseNearAmount(bidNEAR.toString())).then(resp => {
         // console.log(resp);
         load();
       });
-    } if (bidCheddar >= 1) {
-
+    } else if (bidCheddar >= 1) {
       await ft_transfer(window.accountId, bidCheddar, CHEDDAR_TOKEN_CONTRACT).then(resp => {
-        
-        // console.log("here");
         load();
       });
-
-      // await window.contract.make_available_ft({sender_id: window.accountId, amount: bidCheddar, token_id: "token-v3.cheddar.testnet"}, GAS_MAKE_AVAILABLE).then(resp => {
-      //   console.log(resp);
-      //   load();
-      // });
+    } else if (bidNeko >= 5) {
+        await ft_transfer(window.accountId, bidNeko, NEKO_TOKEN_CONTRACT).then(resp => {
+          load();
+        });
     } else {
-      alert("Bid should be > 0.01 NEAR or > 1 Cheddar")
+      alert("Bid should be > 0.01 NEAR or > 1 Cheddar or > 5 Neko")
     }
   });
 
