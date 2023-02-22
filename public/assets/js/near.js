@@ -1,6 +1,7 @@
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
 const NEKO_TOKEN_CONTRACT = "ftv2.nekotoken.near"
+const NEAR = "NEAR"
 // const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
@@ -326,7 +327,18 @@ async function loadPlayers() {
             let current_player_is_available = false;
             let items = players.map(player => {
                 const token_id = player[1].token_id
-                const displayableTokenName = token_id == "NEAR" ? token_id : "CHEDDAR"
+                let displayableTokenName = "";
+                switch (token_id) {
+                case CHEDDAR_TOKEN_CONTRACT:
+                    displayableTokenName = "CHEDDAR";
+                    break;
+                case NEKO_TOKEN_CONTRACT:
+                    displayableTokenName = "NEKO";
+                    break;
+                default:
+                    displayableTokenName = "NEAR";
+                    break;
+                }
                 if (!current_player_is_available && player[0] == window.accountId) {
                     current_player_is_available = true;
                 }

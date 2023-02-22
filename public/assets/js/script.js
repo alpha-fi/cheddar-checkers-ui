@@ -513,17 +513,15 @@ $('#near-make-unavailable').on("click", async function () {
 
       });
 
-      if (player[0][1].token_id === "token-v3.cheddar.testnet") {
-            await window.contract.make_unavailable({}, GAS_MAKE_AVAILABLE, 1).then(async resp => {
-                 console.log(resp);
-                 load();
-            });
+      if (player[0][1].token_id === NEAR) {
+        await window.contract.make_unavailable().then(resp => {
+          load();
+        });
       }
       else {
-           await window.contract.make_unavailable().then(resp => {
-              console.log(resp);
-              load();
-            });
+        await window.contract.make_unavailable({}, GAS_MAKE_AVAILABLE, 1).then(async resp => {
+          load();
+        });
       }
 
 
