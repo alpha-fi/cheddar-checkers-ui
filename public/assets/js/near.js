@@ -168,7 +168,7 @@ async function load_game(force_reload = false) {
             document.getElementById('near-game-player-2').innerText = game.player_2;
             document.getElementById('near-game-turn').innerText = game.turns;
             let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
-            let rewardToken = game.reward.token_id == "NEAR" ? "NEAR" : "CHEDDAR"
+            let rewardToken = getTokenName(game.reward.token_id)
             document.getElementById('near-player-1-deposit').innerText = `Deposit: ${half_reward} ${rewardToken}`;
             document.getElementById('near-player-2-deposit').innerText = document.getElementById('near-player-1-deposit').innerText;
 
@@ -316,6 +316,22 @@ async function loadAvailableGames() {
     });
 }
 
+function getTokenName (token_id){
+    let tokenName = "";
+    switch (token_id) {
+    case CHEDDAR_TOKEN_CONTRACT:
+        tokenName = "CHEDDAR";
+        break;
+    case NEKO_TOKEN_CONTRACT:
+        tokenName = "NEKO";
+        break;
+    default:
+        tokenName = "NEAR";
+        break;
+    }
+    return tokenName
+}
+
 async function loadPlayers() {
     // console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
@@ -327,18 +343,7 @@ async function loadPlayers() {
             let current_player_is_available = false;
             let items = players.map(player => {
                 const token_id = player[1].token_id
-                let displayableTokenName = "";
-                switch (token_id) {
-                case CHEDDAR_TOKEN_CONTRACT:
-                    displayableTokenName = "CHEDDAR";
-                    break;
-                case NEKO_TOKEN_CONTRACT:
-                    displayableTokenName = "NEKO";
-                    break;
-                default:
-                    displayableTokenName = "NEAR";
-                    break;
-                }
+                let displayableTokenName = getTokenName(token_id)
                 if (!current_player_is_available && player[0] == window.accountId) {
                     current_player_is_available = true;
                 }
