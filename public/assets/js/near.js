@@ -32,6 +32,7 @@ let loadGamesInterval;
 let loadGameInterval;
 
 async function load() {
+    current_game_id = -1
     if (loadPlayersInterval)
         clearInterval(loadPlayersInterval);
     if (loadGamesInterval)
@@ -42,6 +43,7 @@ async function load() {
     // console.log(loadGameInterval)
 
     loadAvailableGames().then(async (my_games) => {
+        current_game_id = my_games.length ? my_games[0][0] : -1
         update_game_ui(my_games);
         if (!my_games.length) {
             loadPlayers().then(() => {
@@ -53,6 +55,7 @@ async function load() {
             // check for new game
             loadGamesInterval = setInterval(async () => {
                 await loadAvailableGames().then(async (my_games) => {
+                    current_game_id = my_games.length ? my_games[0][0] : -1
                     update_game_ui(my_games);
                     if(loadGameInterval)
                         clearInterval(loadGameInterval);
@@ -76,7 +79,6 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
-    console.log(my_games)
     if (my_games.length) {
         // console.log("Current game found!");
         // console.log(my_games);
@@ -184,6 +186,7 @@ async function load_game(force_reload = false) {
                 $('#near-waiting-list').removeClass('hidden')
                 $('#near-make-available-block').removeClass('hidden')
                 $('#near-game-turn-block').addClass('hidden')
+                await load()
             } else{
                 $('#near-game-finished').addClass('hidden');
                 $('#near-game-give-up').removeClass('hidden');
