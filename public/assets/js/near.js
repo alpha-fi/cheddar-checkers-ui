@@ -76,7 +76,7 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
-    // console.log(my_games)
+    console.log(my_games)
     if (my_games.length) {
         // console.log("Current game found!");
         // console.log(my_games);
@@ -88,13 +88,15 @@ function update_game_ui(my_games) {
         $('#near-available-players').addClass('hidden');
         $('#near-make-available-block').addClass('hidden');
         $('#near-make-unavailable-block').addClass('hidden');
+        $('#near-game-stats').removeClass('hidden');
     } else {
         // ESTO ES LO QUE COMENTE $("#near-make-unavailable").addClass("hidden")
         $('#near-waiting-list').removeClass('hidden');
         $('#near-available-players').removeClass('hidden');
+        $('#near-game-stats').addClass('hidden');
     }
 
-    $('#near-game-stats').toggleClass('hidden', my_games.length === 0);
+    // $('#near-game-stats').toggleClass('hidden', my_games.length === 0);
 }
 
 function getPlayerByIndex(game, index) {
