@@ -32,7 +32,6 @@ let loadGamesInterval;
 let loadGameInterval;
 
 async function load() {
-    current_game_id = -1
     if (loadPlayersInterval)
         clearInterval(loadPlayersInterval);
     if (loadGamesInterval)
@@ -43,7 +42,6 @@ async function load() {
     // console.log(loadGameInterval)
 
     loadAvailableGames().then(async (my_games) => {
-        current_game_id = my_games.length ? my_games[0][0] : -1
         update_game_ui(my_games);
         if (!my_games.length) {
             loadPlayers().then(() => {
@@ -55,7 +53,6 @@ async function load() {
             // check for new game
             loadGamesInterval = setInterval(async () => {
                 await loadAvailableGames().then(async (my_games) => {
-                    current_game_id = my_games.length ? my_games[0][0] : -1
                     update_game_ui(my_games);
                     if(loadGameInterval)
                         clearInterval(loadGameInterval);
@@ -96,6 +93,8 @@ function update_game_ui(my_games) {
         $('#near-waiting-list').removeClass('hidden');
         $('#near-available-players').removeClass('hidden');
         $('#near-game-stats').addClass('hidden');
+
+        current_game_id = -1
     }
 
     // $('#near-game-stats').toggleClass('hidden', my_games.length === 0);
