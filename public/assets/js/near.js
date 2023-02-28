@@ -1,6 +1,7 @@
 const nft_web4_url = "https://checkers.cheddar.testnet.page/style";
 const CHEDDAR_TOKEN_CONTRACT = "token.cheddar.near"
 const NEKO_TOKEN_CONTRACT = "ftv2.nekotoken.near"
+const NEAR = "NEAR"
 // const CHEDDAR_TOKEN_CONTRACT = "token-v3.cheddar.testnet"
 const players_css = ["player-1", "player-2"];
 
@@ -75,7 +76,7 @@ async function load() {
 }
 
 function update_game_ui(my_games) {
-    // console.log(my_games)
+    console.log(my_games)
     if (my_games.length) {
         // console.log("Current game found!");
         // console.log(my_games);
@@ -87,13 +88,15 @@ function update_game_ui(my_games) {
         $('#near-available-players').addClass('hidden');
         $('#near-make-available-block').addClass('hidden');
         $('#near-make-unavailable-block').addClass('hidden');
+        $('#near-game-stats').removeClass('hidden');
     } else {
         // ESTO ES LO QUE COMENTE $("#near-make-unavailable").addClass("hidden")
         $('#near-waiting-list').removeClass('hidden');
         $('#near-available-players').removeClass('hidden');
+        $('#near-game-stats').addClass('hidden');
     }
 
-    $('#near-game-stats').toggleClass('hidden', my_games.length === 0);
+    // $('#near-game-stats').toggleClass('hidden', my_games.length === 0);
 }
 
 function getPlayerByIndex(game, index) {
@@ -167,7 +170,7 @@ async function load_game(force_reload = false) {
             document.getElementById('near-game-player-2').innerText = game.player_2;
             document.getElementById('near-game-turn').innerText = game.turns;
             let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
-            let rewardToken = game.reward.token_id == "NEAR" ? "NEAR" : "CHEDDAR"
+            let rewardToken = getTokenName(game.reward.token_id)
             document.getElementById('near-player-1-deposit').innerText = `Deposit: ${half_reward} ${rewardToken}`;
             document.getElementById('near-player-2-deposit').innerText = document.getElementById('near-player-1-deposit').innerText;
 
@@ -315,6 +318,22 @@ async function loadAvailableGames() {
     });
 }
 
+function getTokenName (token_id){
+    let tokenName = "";
+    switch (token_id) {
+    case CHEDDAR_TOKEN_CONTRACT:
+        tokenName = "CHEDDAR";
+        break;
+    case NEKO_TOKEN_CONTRACT:
+        tokenName = "NEKO";
+        break;
+    default:
+        tokenName = "NEAR";
+        break;
+    }
+    return tokenName
+}
+
 async function loadPlayers() {
     // console.log("get_available_players");
     await window.contract.get_available_players({from_index: 0, limit: 50}).then(players => {
@@ -326,7 +345,7 @@ async function loadPlayers() {
             let current_player_is_available = false;
             let items = players.map(player => {
                 const token_id = player[1].token_id
-                const displayableTokenName = token_id == "NEAR" ? token_id : "CHEDDAR"
+                let displayableTokenName = getTokenName(token_id)
                 if (!current_player_is_available && player[0] == window.accountId) {
                     current_player_is_available = true;
                 }
