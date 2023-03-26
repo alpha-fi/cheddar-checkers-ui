@@ -281,6 +281,8 @@ function fromatTimestamp(total_seconds) {
 }
 
 async function make_move(line) {
+    // disable the piece to move, else user can make multiple moves
+    $('.piece').addClass('disabled');
     // console.log("Move: ", line)
     if (current_game_id >= 0) {
         // console.log("make_move: " + line);
