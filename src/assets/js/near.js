@@ -433,7 +433,7 @@ export function after() {
             $('.only-after-login').removeClass('hidden');
             $('.only-before-login').addClass('hidden');
 
-            $('#near-account-ref').html("<div>Invite a friend to get a 10% referral bonus:</div><div><input type='text' style='width: 280px' value='https://checkers.nearspace.info/?r=" + window.accountId + "'/></div>");
+            $('#near-account-ref').html("<div>Invite a friend to get a 10% referral bonus:</div><div><input type='text' style='width: 280px' value='" + window.location.origin + "/?r=" + window.accountId + "'/></div>");
 
             // console.log("Logged in as " + window.accountId);
         }
