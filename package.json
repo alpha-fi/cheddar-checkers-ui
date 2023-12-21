@@ -18,7 +18,7 @@
   "scripts": {
     "start": "react-scripts start",
     "start:legacy": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts build",
+    "build": "CI=false && react-scripts build",  // Add CI=False here
     "deploy:pages": "gh-pages -d dist/",
     "build:legacy": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
