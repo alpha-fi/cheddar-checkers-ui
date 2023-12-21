@@ -19,6 +19,7 @@
     "start": "react-scripts start",
     "start:legacy": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
+    "deploy:pages": "gh-pages -d dist/",
     "build:legacy": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
