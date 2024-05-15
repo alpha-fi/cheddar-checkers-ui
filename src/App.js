@@ -482,7 +482,7 @@ function App() {
                   </button>
                 </div>
                 <div id="near-game-finished" className="subtitle hidden">
-                  Game winner: <span id="near-game-winner">...</span>.<br></br>
+                  Game winner: <span id="near-game-winner">...</span><br></br>
                   Reward: <span id="near-game-reward">...</span>
                 </div>
               </div>

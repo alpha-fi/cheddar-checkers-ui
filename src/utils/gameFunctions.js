@@ -177,8 +177,7 @@ async function load_game() {
           $('#near-game-finished').removeClass('hidden')
           document.getElementById('near-game-winner').innerText =
             getPlayerByIndex(game, game.winner_index)
-          document.getElementById('near-game-reward').innerText =
-            nearApi.utils.format.formatNearAmount(game.reward.balance, 2)
+            document.getElementById('near-game-reward').innerText = `${nearApi.utils.format.formatNearAmount(game.reward.balance, 2)} ${rewardToken}` ;
           $('#near-game-give-up').addClass('hidden')
           $('#near-game-turn').addClass('hidden')
         } else {
