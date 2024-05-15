@@ -64,7 +64,6 @@ function update_game_ui(my_games) {
     $('#near-waiting-list').removeClass('hidden')
     $('#near-available-players').removeClass('hidden')
   }
-
   $('#near-game-stats').toggleClass('hidden', my_games.length === 0)
 }
 
@@ -424,6 +423,9 @@ export function get_referral() {
 }
 
 async function hasSufficientTokenBalance(tokenId, minAmount) {
+  if (tokenId === 'NEAR') {
+    return true
+  }
   const balance = await wallet.viewMethod({
     contractId: tokenId,
     method: 'ft_balance_of',
@@ -479,6 +481,7 @@ window.select = async function select(player, deposit, tokenId) {
             },
             amount: deposit.toString(),
             gas: GAS_MAKE_AVAILABLE,
+            deposit: deposit.toString(),
           },
         },
       ],
