@@ -27,7 +27,7 @@ export function inizialise_game(gameBoard, current_player, inverse_colors) {
   }
 
   if (inverse_colors === undefined) inverse_cinverse_colorsolors = false
-
+  
 
   if (gameBoard === undefined) {
     gameBoard = [

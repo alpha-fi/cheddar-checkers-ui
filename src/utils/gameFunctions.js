@@ -1,3 +1,4 @@
+/* global BigInt */
 import $ from 'jquery'
 import * as nearApi from 'near-api-js'
 import { getConfig } from './networkConfig'
@@ -166,12 +167,9 @@ async function load_game() {
         document.getElementById('near-game-player-1').innerText = game.player_1
         document.getElementById('near-game-player-2').innerText = game.player_2
         document.getElementById('near-game-turn').innerText = game.turns
-        let half_reward =
-          parseFloat(
-            nearApi.utils.format.formatNearAmount(game.reward.balance, 2)
-          ) / 2
-        document.getElementById('near-player-1-deposit').innerText =
-          'Deposit: ' + half_reward + ' NEAR'
+        let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
+            let rewardToken = getTokenName(game.reward.token_id)
+            document.getElementById('near-player-1-deposit').innerText = `Deposit: ${half_reward} ${rewardToken}`;
         document.getElementById('near-player-2-deposit').innerText =
           document.getElementById('near-player-1-deposit').innerText
 
@@ -285,7 +283,6 @@ function fromatTimestamp(total_seconds) {
 
 export async function make_move(line) {
   if (current_game_id >= 0) {
-    // console.log("make_move: " + line);
     await wallet
       .callMethod({
         contractId: contractName,
@@ -428,7 +425,7 @@ async function hasSufficientTokenBalance(tokenId, minAmount) {
     method: 'ft_balance_of',
     args: { account_id: wallet.accountId },
   })
-  return balance > minAmount
+  return BigInt(balance) > BigInt(minAmount)
 }
 
 window.select = async function select(player, deposit, tokenId) {

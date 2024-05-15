@@ -1,6 +1,11 @@
-const { override, addExternalBabelPlugin } = require('customize-cra')
+const {
+  addBabelPreset,
+  override,
+  addExternalBabelPlugin,
+} = require('customize-cra')
 
 module.exports = override(
+  addBabelPreset('@babel/preset-env'),
   addExternalBabelPlugin([
     '@babel/plugin-proposal-optional-chaining',
     { loose: false },
