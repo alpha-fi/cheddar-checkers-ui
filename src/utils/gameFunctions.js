@@ -167,9 +167,13 @@ async function load_game() {
         document.getElementById('near-game-player-1').innerText = game.player_1
         document.getElementById('near-game-player-2').innerText = game.player_2
         document.getElementById('near-game-turn').innerText = game.turns
-        let half_reward = parseFloat(nearApi.utils.format.formatNearAmount(game.reward.balance, 2)) / 2;
-            let rewardToken = getTokenName(game.reward.token_id)
-            document.getElementById('near-player-1-deposit').innerText = `Deposit: ${half_reward} ${rewardToken}`;
+        let half_reward =
+          parseFloat(
+            nearApi.utils.format.formatNearAmount(game.reward.balance, 2)
+          ) / 2
+        let rewardToken = getTokenName(game.reward.token_id)
+        document.getElementById('near-player-1-deposit').innerText =
+          `Deposit: ${half_reward} ${rewardToken}`
         document.getElementById('near-player-2-deposit').innerText =
           document.getElementById('near-player-1-deposit').innerText
 
@@ -177,7 +181,8 @@ async function load_game() {
           $('#near-game-finished').removeClass('hidden')
           document.getElementById('near-game-winner').innerText =
             getPlayerByIndex(game, game.winner_index)
-            document.getElementById('near-game-reward').innerText = `${nearApi.utils.format.formatNearAmount(game.reward.balance, 2)} ${rewardToken}` ;
+          document.getElementById('near-game-reward').innerText =
+            `${nearApi.utils.format.formatNearAmount(game.reward.balance, 2)} ${rewardToken}`
           $('#near-game-give-up').addClass('hidden')
           $('#near-game-turn').addClass('hidden')
         } else {
@@ -568,7 +573,7 @@ export function after() {
 
     if (!wallet.accountId) {
       $('#near-action-login').html(
-        '<input type="button" class="login-button" value="Log In">'
+        '<input type="button" class="login-button button" value="Log In">'
       )
 
       $('.login-button').on('click', function () {
@@ -579,7 +584,7 @@ export function after() {
     } else {
       $('#near-account').html('Logged in as ' + wallet.accountId)
       $('#near-action').html(
-        '<input type="button" id="logout-button" value="Log Out">'
+        '<input type="button" id="logout-button" class="login-button button" value="Log Out">'
       )
 
       $('#near-action').on('click', '#logout-button', function () {
